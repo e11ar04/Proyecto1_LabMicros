@@ -205,7 +205,16 @@ section .data
 
 	.inicio:
   	;Impresión de las instrucciones
+<<<<<<< HEAD
 		print instrucciones,tam_instrucciones
+=======
+  	mov rax,1							;rax = "sys_write"
+  	mov rdi,1							;rdi = 1 (standard output = pantalla)
+  	mov rsi,instrucciones				;rsi = mensaje a imprimir
+  	mov rdx,tam_instrucciones	;rdx=tamano del string
+  	syscall								;Llamar al sistema
+
+>>>>>>> 6edb4fdbf08a2b1dc49bf745d8fe2f11f7655762
 
 		;Captura de opcion elegida
 		read tecla,1
