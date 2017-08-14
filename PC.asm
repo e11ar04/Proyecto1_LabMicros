@@ -168,7 +168,7 @@ section .data
 
 
 	.inicio:
-  	;Impreción de las instrucciones
+  	;Impresión de las instrucciones
   	mov rax,1							;rax = "sys_write"
   	mov rdi,1							;rdi = 1 (standard output = pantalla)
   	mov rsi,instrucciones				;rsi = mensaje a imprimir
