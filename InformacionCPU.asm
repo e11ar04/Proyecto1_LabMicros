@@ -1,6 +1,6 @@
 ;--------------------Segmento de datos--------------------
 ;Aqui se declaran las constantes de uso frecuente en el programa
-section .data
+section .data 
 
         ;Textos auxiliares
         salida: db 'Cerrando programa ', 0xa	; Instrucciones para el usuario
