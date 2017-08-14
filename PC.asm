@@ -8,6 +8,44 @@
 ;(versión, revisión, etc) y mostrarla a su usuario
 ;#######################################################################
 
+
+;--------------------Segmento de Macros--------------------
+
+;-------------------------  MACRO #1  ----------------------------------
+;Macro-1: print.
+;	Imprime un mensaje que se pasa como parametro
+;	Recibe 2 parametros de entrada:
+;		%1 es la direccion del texto a imprimir
+;		%2 es la cantidad de bytes a imprimir
+;-----------------------------------------------------------------------
+%macro print 2 	;recibe 2 parametros
+	mov rax,1	;sys_write
+	mov rdi,1	;std_out
+	mov rsi,%1	;primer parametro: Texto
+	mov rdx,%2	;segundo parametro: Tamano texto
+	syscall
+%endmacro
+;------------------------- FIN DE MACRO --------------------------------
+
+;-------------------------  MACRO #2  ----------------------------------
+;Macro-2: leer_texto.
+;	Lee un mensaje desde teclado y se almacena en la variable que se
+;	pasa como parametro
+;	Recibe 2 parametros de entrada:
+;		%1 es la direccion de memoria donde se guarda el texto
+;		%2 es la cantidad de bytes a guardar
+;-----------------------------------------------------------------------
+%macro read 2 	;recibe 2 parametros
+	mov rax,0	;sys_read
+	mov rdi,0	;std_input
+	mov rsi,%1	;primer parametro: Variable
+	mov rdx,%2	;segundo parametro: Tamano
+	syscall
+%endmacro
+;------------------------- FIN DE MACRO --------------------------------
+
+
+
 ;--------------------Segmento de datos--------------------
 ;Aqui se declaran las constantes de uso frecuente en el programa
 
@@ -153,8 +191,6 @@ section .data
 
 
 
-
-
   ;--------------------Segmento de codigo--------------------
   ;Secuencia de ejecucion del programa
 
@@ -168,21 +204,11 @@ section .data
 
 
 	.inicio:
-  	;Impreción de las instrucciones
-  	mov rax,1							;rax = "sys_write"
-  	mov rdi,1							;rdi = 1 (standard output = pantalla)
-  	mov rsi,instrucciones				;rsi = mensaje a imprimir
-  	mov rdx,tam_instrucciones	;rdx=tamano del string
-  	syscall								;Llamar al sistema
-
+  	;Impresión de las instrucciones
+		print instrucciones,tam_instrucciones
 
 		;Captura de opcion elegida
-		mov rax,0							;rax = "sys_read"
-		mov rdi,0							;rdi = 0 (standard input = teclado)
-		mov rsi,tecla					;rsi = direccion de memoria donde se almacena la tecla capturada
-		mov rdx,1							;rdx=1 (cuantos eventos o teclazos capturar)
-		mov r9,[rsi]
-	 	syscall								;Llamar al sistema
+		read tecla,1
 
     ;Elegir opción
 		mov r10,'1' ;Guarda en r10 un  1
@@ -190,6 +216,13 @@ section .data
 		mov r12,'3' ;;Guarda en r12 un  3
 		mov r13,'4' ;;Guarda en r12 un  4
 	_break:
+
+;*******************************************************************************
+;CORREGIR
+;*******************************************************************************
+		;Se supone que se copia el contenido almacenado en la direccion de memoria
+		;rsi el cual es la tecla presionada pero no sucede así, por eso no entra en el menú
+		mov r9,[rsi] ;
 
 		;Comparación de la tecla ingresada con cada opción
 		cmp r10,r9
@@ -201,41 +234,23 @@ section .data
 		cmp r13,r9
 		je .fin
 
-		;Impreción error por opcion invalida
-		mov rax,1							;rax = "sys_write"
-		mov rdi,1							;rdi = 1 (standard output = pantalla)
-		mov rsi,error				;rsi = mensaje a imprimir
-		mov rdx,tam_error	;rdx=tamano del string
-		syscall								;Llamar al sistema
+		;Impresión error por opcion invalida
+		print error,tam_error
 		jmp _start           ;Vuelve a mostrar las opciones
 
 	.cpu:
 		;Impresión de la inctrucción
-		mov rax,1							;rax = "sys_write"
-		mov rdi,1							;rdi = 1 (standard output = pantalla)
-		mov rsi,inst1				;rsi = mensaje a imprimir
-		mov rdx,tam_inst1	;rdx=tamano del string
-		syscall								;Llamar al sistema
+		print inst1,tam_inst1
 		jmp .fin
 
 	.mem:
 		;Impresión de la inctrucción
-		mov rax,1							;rax = "sys_write"
-		mov rdi,1							;rdi = 1 (standard output = pantalla)
-		mov rsi,inst2				;rsi = mensaje a imprimir
-		mov rdx,tam_inst2	;rdx=tamano del string
-		syscall								;Llamar al sistema
+		print inst2,tam_inst2
 		jmp .fin
-
-
 
 	.so:
 		;Impresión de la inctrucción
-		mov rax,1							;rax = "sys_write"
-		mov rdi,1							;rdi = 1 (standard output = pantalla)
-		mov rsi,inst3				;rsi = mensaje a imprimir
-		mov rdx,tam_inst3	;rdx=tamano del string
-		syscall								;Llamar al sistema
+		print inst3, tam_inst3
 		jmp .fin
 
 
