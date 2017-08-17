@@ -1,0 +1,218 @@
+;--------------------Segmento de Macros--------------------
+
+
+;-------------------------  MACRO #1  ----------------------------------
+;Macro-1: leer stdin_termios.
+;	Captura la configuracion del stdin
+;	recibe 2 parametros:
+;		%1 es el valor de stdin
+;		%2 es el valor de termios
+;-----------------------------------------------------------------------
+%macro read_stdin_termios 2
+        push rax
+        push rbx
+        push rcx
+        push rdx
+
+        mov eax, 36h
+        mov ebx, %1
+        mov ecx, 5401h
+        mov edx, %2
+        int 80h
+
+        pop rdx
+        pop rcx
+        pop rbx
+        pop rax
+%endmacro
+;------------------------- FIN DE MACRO --------------------------------
+
+
+;-------------------------  MACRO #2  ----------------------------------
+;Macro-2: escribir stdin_termios.
+;	Captura la configuracion del stdin
+;	recibe 2 parametros:
+;		%1 es el valor de stdin
+;		%2 es el valor de termios
+;-----------------------------------------------------------------------
+%macro write_stdin_termios 2
+        push rax
+        push rbx
+        push rcx
+        push rdx
+
+        mov eax, 36h
+        mov ebx, %1
+        mov ecx, 5402h
+        mov edx, %2
+        int 80h
+
+        pop rdx
+        pop rcx
+        pop rbx
+        pop rax
+%endmacro
+;------------------------- FIN DE MACRO --------------------------------
+
+
+;-------------------------  MACRO #3  ----------------------------------
+;Macro-3: apagar el modo canonico.
+;	Apaga el modo canonico del Kernel
+;	recibe 2 parametros:
+;		%1 es el valor de ICANON
+;		%2 es el valor de termios
+;-----------------------------------------------------------------------
+%macro canonical_off 2
+	;Se llama a la funcion que lee el estado actual del TERMIOS en STDIN
+	;TERMIOS son los parametros de configuracion que usa Linux para STDIN
+        read_stdin_termios stdin,termios
+
+	;Se escribe el nuevo valor de ICANON en EAX, para apagar el modo canonico
+        push rax
+        mov eax, %1
+        not eax
+        and [%2 + 12], eax
+        pop rax
+
+	;Se escribe la nueva configuracion de TERMIOS
+        write_stdin_termios stdin,termios
+%endmacro
+;------------------------- FIN DE MACRO --------------------------------
+
+
+;-------------------------  MACRO #4  ----------------------------------
+;Macro-4: encender el modo canonico.
+;	Recupera el modo canonico del Kernel
+;	recibe 2 parametros:
+;		%1 es el valor de ICANON
+;		%2 es el valor de termios
+;-----------------------------------------------------------------------
+%macro canonical_on 2
+
+	;Se llama a la funcion que lee el estado actual del TERMIOS en STDIN
+	;TERMIOS son los parametros de configuracion que usa Linux para STDIN
+	read_stdin_termios stdin,termios
+
+        ;Se escribe el nuevo valor de modo Canonico
+        or dword [%2 + 12], %1
+
+	;Se escribe la nueva configuracion de TERMIOS
+        write_stdin_termios stdin,termios
+%endmacro
+;----------------------------------------------------
+
+
+;-------------------------  MACRO #5  ----------------------------------
+;Macro-5: print.
+;	Imprime un mensaje que se pasa como parametro
+;	Recibe 2 parametros de entrada:
+;		%1 es la direccion del texto a imprimir
+;		%2 es la cantidad de bytes a imprimir
+;-----------------------------------------------------------------------
+%macro print 2 	;recibe 2 parametros
+	mov rax,1	;sys_write
+	mov rdi,1	;std_out
+	mov rsi,%1	;primer parametro: Texto
+	mov rdx,%2	;segundo parametro: Tamano texto
+	syscall
+%endmacro
+;------------------------- FIN DE MACRO --------------------------------
+
+
+;-------------------------  MACRO #6  ----------------------------------
+;Macro-6: read.
+;	Lee un mensaje desde teclado y se almacena en la variable que se
+;	pasa como parametro
+;	Recibe 2 parametros de entrada:
+;		%1 es la direccion de memoria donde se guarda el texto
+;		%2 es la cantidad de bytes a guardar
+;-----------------------------------------------------------------------
+%macro read 2 	;recibe 2 parametros
+	mov rax,0	;sys_read
+	mov rdi,0	;std_input
+	mov rsi,%1	;primer parametro: Variable
+	mov rdx,%2	;segundo parametro: Tamano
+	syscall
+%endmacro
+;------------------------- FIN DE MACRO --------------------------------
+
+
+;-------------------------  MACRO #7  ----------------------------------
+
+; Simon Whitehead, 2015
+
+;    This program converts numbers into ASCII characters and
+;    prints them to stdout.
+;Imprimir enteros
+
+%macro printInt 1
+section .bss
+
+    numbuf resb 10		; A buffer to store our string of numbers in
+
+section .text
+global _startt
+
+_startt:
+    mov rdi,%1	; Move the number (123456789) into rax
+    call itoa		; call the function
+
+    ; Write the string returned in rax out to stdout
+    mov rdi,rax		; The string pointer is returned in rax - move it to rdi for the function call
+    mov rsi,rcx
+    call print
+
+    ; Write the newline character to stdout
+    mov rdi,10
+    mov rsi,1
+    call print
+
+   ; Exit
+    mov rax,1
+    mov rbx,0
+
+    int 0x80
+
+; Args: (rdi: char*, rsi: int)
+print:
+
+    mov rax,4
+    mov rbx,1
+    mov rcx,rdi
+    mov rdx,rsi
+
+    int 0x80
+
+    ret
+
+itoa:
+
+    push rbp
+    mov rbp,rsp
+    sub rsp,4		; allocate 4 bytes for our local string length counter
+
+    mov rax,rdi		; Move the passed in argument to rax
+    lea rdi,[numbuf+10]	; load the end address of the buffer (past the very end)
+    mov rcx,10		; divisor
+    mov [rbp-4],dword 0	; rbp-4 will contain 4 bytes representing the length of the string - start at zero
+
+.divloop:
+    xor rdx,rdx		; Zero out rdx (where our remainder goes after idiv)
+    idiv rcx		; divide rax (the number) by 10 (the remainder is placed in rdx)
+    add rdx,0x30	; add 0x30 to the remainder so we get the correct ASCII value
+    dec rdi		; move the pointer backwards in the buffer
+    mov byte [rdi],dl	; move the character into the buffer
+    inc dword [rbp-4]	; increase the length
+
+    cmp rax,0		; was the result zero?
+    jnz .divloop	; no it wasn't, keep looping
+
+    mov rax,rdi		; rdi now points to the beginning of the string - move it into rax
+    mov rcx,[rbp-4]	; rbp-4 contains the length - move it into rcx
+
+    leave		; clean up our stack
+    ret
+    %endmacro
+
+
+;#######################################################################
