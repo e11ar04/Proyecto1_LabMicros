@@ -57,23 +57,29 @@ section .data
         id db "id del Vendedor = XXXXXXXXXXXX",0xA
         tam_id: equ $-id
 
-				SteppingID db 'Stepping ID = '
+	SteppingID db 'Stepping ID = '
         tam_SteppingID: equ $-SteppingID
 
         modelo db 'Modelo = '
         tam_modelo: equ $-modelo
 
-				familia db 'Familia = '
+	familia db 'Familia = '
         tam_familia: equ $-familia
 
-				tipo db 'Tipo de Procesador= '
+	tipo db 'Tipo de Procesador= '
         tam_tipo: equ $-tipo
 
-				ModeloExt db 'Modelo Extendido = '
+	ModeloExt db 'Modelo Extendido = '
         tam_ModeloExt: equ $-ModeloExt
 
-				SLinea db 0xA
+	SLinea db 0xA
 
+	cache_size db 'Tamano de la L1 Instruction Cache en Bytes='
+	tam_cache_size: equ $-cache_size
+	
+	cache_size2 db 'Tamano de la L1 Data Cache en Bytes='
+	tam_cache_size2: equ $-cache_size
+	
 
 section .bss
 				;Para el Macro printInt
@@ -169,12 +175,65 @@ _start:
 				shr rdx,16
 				printInt rdx,numbuf
 				print SLinea,1   ;Salto de linea
+	
+	;-------tamano de la cache {L1 instruction cache}
+	
+	
+	print cache_size,tam_cache_size
 
-				;Fin del programa
-				;Se liberan los recursos
+	mov eax, 4  ;eax en 4
+	mov ecx, 0  ;cache
+	cpuid       ;extrae datos de la cache
+	
+	;------extraccion del primer factor para determinar el tamano de la cache
+	mov r11d, ebx
+	and r11d, 0xffc00000
+	shr r11d, 22
+	add r11d, 1
+
+	;------extraccion del segundo factor para determinar el tamano de la cache	
+
+	mov r12d, ebx
+	and r12d, 0x003ff000
+	shr r12d, 12
+	add r12d, 1
+
+	;------extraccion del tercer factor para determinar el tamano de la cache	
+	mov r13d, ebx
+	and r13d, 0x00000fff
+	add r13d, 1
+
+	;------extraccion del cuarto factor para determinar el tamano de la cache	
+	mov r14d, ecx
+	add r14d,1
+	
+	;------multiplicacion de dichos factores
+
+	mov eax, r11d
+	mul r12d
+	mul r13d
+	mul r14d
+
+	printInt rax,numbuf
+	print SLinea,1   ;-------------------Salto de linea
+	
+	;####################################################################
+
+
+
+;Fin del programa
+	
+
+
+;Se liberan los recursos
         mov eax,1
         xor ebx,ebx
         int 0x80
+
+
+
+
+
 
 
 ;Loop de division necesario para el macro printInt
