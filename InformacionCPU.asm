@@ -7,6 +7,12 @@
 ; ---------------------
 ; Convierte numeros enteros a sus caracteres ASCII y los imprime
 
+%macro calculo_cache 4
+   	mov eax, %1
+	mul %2
+	mul %3
+	mul %4
+%endmacro
 
 %macro printt 2
     mov rax,4
@@ -77,7 +83,7 @@ section .data
 	cache_size db 'Tamano de la L1 Instruction Cache en Bytes='
 	tam_cache_size: equ $-cache_size
 	
-	cache_size2 db 'Tamano de la L1 Data Cache en Bytes='
+	cache_size2 db 'Tamano de la L1 Data Cache en Bytes = '
 	tam_cache_size2: equ $-cache_size
 	
 
@@ -207,13 +213,9 @@ _start:
 	mov r14d, ecx
 	add r14d,1
 	
-	;------multiplicacion de dichos factores
-
-	mov eax, r11d
-	mul r12d
-	mul r13d
-	mul r14d
-
+	;------calculo de cache
+	
+	calculo_cache r11d,r12d,r13d,r14d
 	printInt rax,numbuf
 	print SLinea,1   ;-------------------Salto de linea
 	
