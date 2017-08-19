@@ -27,3 +27,5 @@ https://www.microbe.cz/docs/CPUID.pdf
 RAM   
 
 https://stackoverflow.com/questions/17339068/finding-memory-size-in-boot-without-dos-windows-linux
+
+http://wiki.osdev.org/Detecting_Memory_%28x86%29
