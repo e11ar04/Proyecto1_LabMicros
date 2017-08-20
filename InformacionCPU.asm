@@ -7,13 +7,6 @@
 ; ---------------------
 ; Convierte numeros enteros a sus caracteres ASCII y los imprime
 
-%macro calculo_cache 4
-   	mov eax, %1
-	mul %2
-	mul %3
-	mul %4
-%endmacro
-
 %macro printt 2
     mov rax,4
     mov rbx,1
@@ -80,11 +73,18 @@ section .data
 
 	SLinea db 0xA
 
-	cache_size db 'Tamano de la L1 Instruction Cache en Bytes='
+	cache_size db 'Tamano de la Cache de Instrucciones L1 en Bytes = '
 	tam_cache_size: equ $-cache_size
 	
-	cache_size2 db 'Tamano de la L1 Data Cache en Bytes = '
-	tam_cache_size2: equ $-cache_size
+	cache_size2 db 'Tamano de la Cache de Datos L1 en Bytes = '
+	tam_cache_size2: equ $-cache_size2
+	
+	cacheL2 db 'Tamano de la Cache L2 en Bytes = '
+	cacheL2_size: equ $-cacheL2
+	
+	cacheL3 db 'Tamano de la Cache L3 en Bytes = '
+	cacheL3_size: equ $-cacheL3
+	
 	
 
 section .bss
@@ -98,7 +98,10 @@ section .bss
 
 section .text
 global _start
-global _break ;Etiqueta para depurar
+global _break
+global _break1
+
+
 
 _start:
 
@@ -117,20 +120,20 @@ _start:
 
         mov eax,1   ;Pone eax en 1
         cpuid       ;Toma la información
-				mov r15,rax ;guarda la informacion de rax en otro registro para reutilizarla
+	mov r15,rax ;guarda la informacion de rax en otro registro para reutilizarla
 
 				;_______________________________________________________________________
         ;Stepping ID
 
         ;Imprime el texto Stepping ID =
         print SteppingID,tam_SteppingID
-
+	printInt rbx,numbuf
         ;Obteniendo el modelo
         ;El modelo esta dado en eax[7:4]
-				mov rdx,r15   ;copia el contenido de rax
+	mov rdx,r15   ;copia el contenido de rax
         and rdx,0xf  ;deja solamente la informacion del modelo
-        printInt rdx,numbuf ;Imprime el Stepping ID
-				print SLinea,1   ;Salto de linea
+	printInt rbx,numbuf
+	print SLinea,1   ;Salto de linea
 
         ;_______________________________________________________________________
         ;Modelo
@@ -142,9 +145,10 @@ _start:
         ;El modelo esta dado en eax[7:4]
 				mov rdx,r15   ;copia el contenido de rax
         and rdx,0xf0  ;deja solamente la informacion del modelo
-				shr rdx,4  		;desplaza el modelo a la posicion correcta
-        printInt rdx,numbuf ;Imprime el modelo
+				shr rdx,4  		;desplaza el modelo a la posicion correcta	        printInt rdx,numbuf ;Imprime el modelo
+				printInt rbx,numbuf
 				print SLinea,1   ;Salto de linea
+
 
 				;_______________________________________________________________________
 				;Familia
@@ -155,7 +159,7 @@ _start:
         mov rdx,r15   ;copia el contenido de rax
         and rdx,0xf00  ;deja solamente la informacion la familia
 				shr rdx,8 		;desplaza la familia a la posicion correcta
-        printInt rdx,numbuf
+				printInt rbx,numbuf
 				print SLinea,1   ;Salto de linea
 
 				;_______________________________________________________________________
@@ -167,7 +171,7 @@ _start:
         mov rdx,r15   ;copia el contenido de rax
         and rdx,0xf000
 				shr rdx,12
-        printInt rdx,numbuf
+				printInt rbx,numbuf
 				print SLinea,1   ;Salto de linea
 
 				;_______________________________________________________________________
@@ -179,51 +183,184 @@ _start:
 				mov rdx,r15   ;copia el contenido de rax
 				and rdx,0xf0000
 				shr rdx,16
-				printInt rdx,numbuf
+				printInt rbx,numbuf
 				print SLinea,1   ;Salto de linea
 	
-	;-------tamano de la cache {L1 instruction cache}
-	
-	
-	print cache_size,tam_cache_size
 
-	mov eax, 4  ;eax en 4
-	mov ecx, 0  ;cache
+;-------tamano de la cache {L1 instruction cache}
+	
+	mov rax, 4  ;eax en 4
+	mov rcx, 0  ;cache
 	cpuid       ;extrae datos de la cache
 	
 	;------extraccion del primer factor para determinar el tamano de la cache
-	mov r11d, ebx
+	mov r11, rbx
 	and r11d, 0xffc00000
-	shr r11d, 22
-	add r11d, 1
+	shr r11, 22
+	add r11, 1
 
 	;------extraccion del segundo factor para determinar el tamano de la cache	
 
-	mov r12d, ebx
+	mov r12, rbx
 	and r12d, 0x003ff000
-	shr r12d, 12
-	add r12d, 1
+	shr r12, 12
+	add r12, 1
 
 	;------extraccion del tercer factor para determinar el tamano de la cache	
-	mov r13d, ebx
+	mov r13, rbx
 	and r13d, 0x00000fff
-	add r13d, 1
+	add r13, 1
 
 	;------extraccion del cuarto factor para determinar el tamano de la cache	
-	mov r14d, ecx
-	add r14d,1
+	mov r14, rcx
+	add r14,1
 	
 	;------calculo de cache
-	
-	calculo_cache r11d,r12d,r13d,r14d
-	printInt rax,numbuf
+
+   	mov rax,1
+	mul r11d
+	mul r12d
+	mul r13d
+	mul r14d
+
+	mov ebx,eax
+	print cache_size,tam_cache_size
+	printInt rbx,numbuf
 	print SLinea,1   ;-------------------Salto de linea
 	
+
 	;####################################################################
+	
+;-------tamano de la cache {L1 data cache}
+
+	mov rax, 4  ;eax en 4
+	mov rcx, 1  ;cache
+	cpuid       ;extrae datos de la cache
+	
+	;------extraccion del primer factor para determinar el tamano de la cache
+	mov r11, rbx
+	and r11d, 0xffc00000
+	shr r11, 22
+	add r11, 1
+
+	;------extraccion del segundo factor para determinar el tamano de la cache	
+
+	mov r12, rbx
+	and r12d, 0x003ff000
+	shr r12, 12
+	add r12, 1
+
+	;------extraccion del tercer factor para determinar el tamano de la cache	
+	mov r13, rbx
+	and r13d, 0x00000fff
+	add r13, 1
+
+	;------extraccion del cuarto factor para determinar el tamano de la cache	
+	mov r14, rcx
+	add r14,1
+	
+	;------calculo de cache
+
+   	mov rax,1
+	mul r11d
+	mul r12d
+	mul r13d
+	mul r14d
+
+	mov ebx,eax
+	print cache_size2,tam_cache_size2
+	printInt rbx,numbuf
+	print SLinea,1   ;-------------------Salto de linea
+	
+;-------tamano de la cache {Cache L2}
+
+	mov rax, 4  ;eax en 4
+	mov rcx, 2  ;cache
+	cpuid       ;extrae datos de la cache
+	
+	;------extraccion del primer factor para determinar el tamano de la cache
+	mov r11, rbx
+	and r11d, 0xffc00000
+	shr r11, 22
+	add r11, 1
+
+	;------extraccion del segundo factor para determinar el tamano de la cache	
+
+	mov r12, rbx
+	and r12d, 0x003ff000
+	shr r12, 12
+	add r12, 1
+
+	;------extraccion del tercer factor para determinar el tamano de la cache	
+	mov r13, rbx
+	and r13d, 0x00000fff
+	add r13, 1
+
+	;------extraccion del cuarto factor para determinar el tamano de la cache	
+	mov r14, rcx
+	add r14,1
+	
+	;------calculo de cache
+
+   	mov rax,1
+	mul r11d
+	mul r12d
+	mul r13d
+	mul r14d
+
+	mov ebx,eax
+	print cacheL2,cacheL2_size
+	printInt rbx,numbuf
+	print SLinea,1   ;-------------------Salto de linea
+
+	
+	;-------tamano de la cache {Cache L3}
+
+	mov rax, 4  ;eax en 4
+	mov rcx, 3  ;cache
+	cpuid       ;extrae datos de la cache
+	
+	;------extraccion del primer factor para determinar el tamano de la cache
+	mov r11, rbx
+	and r11d, 0xffc00000
+	shr r11, 22
+	add r11, 1
+
+	;------extraccion del segundo factor para determinar el tamano de la cache	
+
+	mov r12, rbx
+	and r12d, 0x003ff000
+	shr r12, 12
+	add r12, 1
+
+	;------extraccion del tercer factor para determinar el tamano de la cache	
+	mov r13, rbx
+	and r13d, 0x00000fff
+	add r13, 1
+
+	;------extraccion del cuarto factor para determinar el tamano de la cache	
+	mov r14, rcx
+	add r14,1
+	
+	;------calculo de cache
+
+   	mov rax,1
+	mul r11d
+	mul r12d
+	mul r13d
+	mul r14d
+
+	mov ebx,eax
+	print cacheL3,cacheL3_size
+	printInt rbx,numbuf
+	print SLinea,1   ;-------------------Salto de linea
 
 
 
-;Fin del programa
+
+;Fin del programa  	
+	
+
 	
 
 
