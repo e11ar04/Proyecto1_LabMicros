@@ -85,6 +85,8 @@ section .data
 	cacheL3 db 'Tamano de la Cache L3 en Bytes = '
 	cacheL3_size: equ $-cacheL3
 	
+	cores db 'Numero de nucleos = '
+	cores_size: equ $-cores
 	
 
 section .bss
@@ -174,17 +176,17 @@ _start:
 				printInt rbx,numbuf
 				print SLinea,1   ;Salto de linea
 
-				;_______________________________________________________________________
-				;Modelo Extendido
+	;_______________________________________________________________________
+	;Modelo Extendido
 
-				;Imprime el texto Modelo Extendido =
-				print ModeloExt,tam_ModeloExt
-				;Obteniendo la familia
-				mov rdx,r15   ;copia el contenido de rax
-				and rdx,0xf0000
-				shr rdx,16
-				printInt rbx,numbuf
-				print SLinea,1   ;Salto de linea
+	;Imprime el texto Modelo Extendido =
+	print ModeloExt,tam_ModeloExt
+	;Obteniendo la familia
+	mov rdx,r15   ;copia el contenido de rax
+	and rdx,0xf0000
+	shr rdx,16
+	printInt rbx,numbuf
+	print SLinea,1   ;Salto de linea
 	
 
 ;-------tamano de la cache {L1 instruction cache}
@@ -314,7 +316,7 @@ _start:
 	print SLinea,1   ;-------------------Salto de linea
 
 	
-	;-------tamano de la cache {Cache L3}
+;-------tamano de la cache {Cache L3}
 
 	mov rax, 4  ;eax en 4
 	mov rcx, 3  ;cache
@@ -355,8 +357,20 @@ _start:
 	printInt rbx,numbuf
 	print SLinea,1   ;-------------------Salto de linea
 
+	
+;----------------------------numero de nucleos--------------------------
 
+	mov eax,0xb ;---Se carga eax con 0xb para obtener el numero de nucleos en en ebx
+	mov ecx,1
+	cpuid
+	mov r10d,ebx
+	and ebx,0x0000ffff
 
+	print cores,cores_size
+	printInt rbx,numbuf
+	print SLinea,1   ;-------------------Salto de linea
+	
+	
 
 ;Fin del programa  	
 	
