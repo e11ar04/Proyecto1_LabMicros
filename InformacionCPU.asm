@@ -7,6 +7,7 @@
 ; ---------------------
 ; Convierte numeros enteros a sus caracteres ASCII y los imprime
 
+
 %macro printt 2
     mov rax,4
     mov rbx,1
@@ -56,23 +57,23 @@ section .data
         id db "id del Vendedor = XXXXXXXXXXXX",0xA
         tam_id: equ $-id
 
-	SteppingID db 'Stepping ID = '
+				SteppingID db 'Stepping ID = '
         tam_SteppingID: equ $-SteppingID
 
         modelo db 'Modelo = '
         tam_modelo: equ $-modelo
 
-	familia db 'Familia = '
+				familia db 'Familia = '
         tam_familia: equ $-familia
 
-	tipo db 'Tipo de Procesador= '
+				tipo db 'Tipo de Procesador= '
         tam_tipo: equ $-tipo
 
-	ModeloExt db 'Modelo Extendido = '
+				ModeloExt db 'Modelo Extendido = '
         tam_ModeloExt: equ $-ModeloExt
 
-	SLinea db 0xA
-
+				SLinea db 0xA
+	
 	cache_size db 'Tamano de la Cache de Instrucciones L1 en Bytes = '
 	tam_cache_size: equ $-cache_size
 	
@@ -87,7 +88,7 @@ section .data
 	
 	cores db 'Numero de nucleos = '
 	cores_size: equ $-cores
-	
+
 
 section .bss
 				;Para el Macro printInt
@@ -100,10 +101,7 @@ section .bss
 
 section .text
 global _start
-global _break
-global _break1
-
-
+global _break ;Etiqueta para depurar
 
 _start:
 
@@ -122,20 +120,20 @@ _start:
 
         mov eax,1   ;Pone eax en 1
         cpuid       ;Toma la información
-	mov r15,rax ;guarda la informacion de rax en otro registro para reutilizarla
+				mov r15,rax ;guarda la informacion de rax en otro registro para reutilizarla
 
 				;_______________________________________________________________________
         ;Stepping ID
 
         ;Imprime el texto Stepping ID =
         print SteppingID,tam_SteppingID
-	printInt rbx,numbuf
+
         ;Obteniendo el modelo
         ;El modelo esta dado en eax[7:4]
-	mov rdx,r15   ;copia el contenido de rax
+				mov rdx,r15   ;copia el contenido de rax
         and rdx,0xf  ;deja solamente la informacion del modelo
-	printInt rbx,numbuf
-	print SLinea,1   ;Salto de linea
+        printInt rdx,numbuf ;Imprime el Stepping ID
+				print SLinea,1   ;Salto de linea
 
         ;_______________________________________________________________________
         ;Modelo
@@ -147,10 +145,9 @@ _start:
         ;El modelo esta dado en eax[7:4]
 				mov rdx,r15   ;copia el contenido de rax
         and rdx,0xf0  ;deja solamente la informacion del modelo
-				shr rdx,4  		;desplaza el modelo a la posicion correcta	        printInt rdx,numbuf ;Imprime el modelo
-				printInt rbx,numbuf
+				shr rdx,4  		;desplaza el modelo a la posicion correcta
+        printInt rdx,numbuf ;Imprime el modelo
 				print SLinea,1   ;Salto de linea
-
 
 				;_______________________________________________________________________
 				;Familia
@@ -161,7 +158,7 @@ _start:
         mov rdx,r15   ;copia el contenido de rax
         and rdx,0xf00  ;deja solamente la informacion la familia
 				shr rdx,8 		;desplaza la familia a la posicion correcta
-				printInt rbx,numbuf
+        printInt rdx,numbuf
 				print SLinea,1   ;Salto de linea
 
 				;_______________________________________________________________________
@@ -173,21 +170,24 @@ _start:
         mov rdx,r15   ;copia el contenido de rax
         and rdx,0xf000
 				shr rdx,12
-				printInt rbx,numbuf
+        printInt rdx,numbuf
 				print SLinea,1   ;Salto de linea
 
-	;_______________________________________________________________________
-	;Modelo Extendido
+				;_______________________________________________________________________
+				;Modelo Extendido
 
-	;Imprime el texto Modelo Extendido =
-	print ModeloExt,tam_ModeloExt
-	;Obteniendo la familia
-	mov rdx,r15   ;copia el contenido de rax
-	and rdx,0xf0000
-	shr rdx,16
-	printInt rbx,numbuf
-	print SLinea,1   ;Salto de linea
-	
+				;Imprime el texto Modelo Extendido =
+				print ModeloExt,tam_ModeloExt
+				;Obteniendo la familia
+				mov rdx,r15   ;copia el contenido de rax
+				and rdx,0xf0000
+				shr rdx,16
+				printInt rdx,numbuf
+				print SLinea,1   ;Salto de linea
+
+				;Fin del programa
+				
+
 
 ;-------tamano de la cache {L1 instruction cache}
 	
