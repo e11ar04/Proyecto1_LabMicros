@@ -89,6 +89,9 @@ section .data
 	cores db 'Numero de nucleos = '
 	cores_size: equ $-cores
 
+	brand db 'Brand Id = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',0xA
+	brand_size: equ $-brand
+
 
 section .bss
 				;Para el Macro printInt
@@ -104,6 +107,34 @@ global _start
 global _break ;Etiqueta para depurar
 
 _start:
+
+	;----------------------------brand ID--------------------------------------
+
+	mov eax, 80000002h
+	cpuid
+	mov edi,brand  ;Copia el string id para modificarlo con la nueva información
+        mov [edi+11],eax;Copia los primeros 4 bytes en las posiciones de las x
+        mov [edi+15],ebx;Copia los primeros 4 bytes en las posiciones de las x
+        mov [edi+19],ecx;Copia los primeros 4 bytes en las posiciones de las x
+	mov [edi+23],edx;Copia los primeros 4 bytes en las posiciones de las x
+	
+
+	mov eax, 80000003h
+	cpuid
+	mov [edi+27],eax;Copia los primeros 4 bytes en las posiciones de las x
+	mov [edi+31],ebx;Copia los primeros 4 bytes en las posiciones de las x
+	mov [edi+35],ecx;Copia los primeros 4 bytes en las posiciones de las x
+	mov [edi+39],edx;Copia los primeros 4 bytes en las posiciones de las x
+
+	mov eax, 80000004h
+	cpuid
+	mov [edi+43],eax;Copia los primeros 4 bytes en las posiciones de las x
+	mov [edi+47],ebx;Copia los primeros 4 bytes en las posiciones de las x
+	mov [edi+51],ecx;Copia los primeros 4 bytes en las posiciones de las x
+	mov [edi+55],edx;Copia los primeros 4 bytes en las posiciones de las x
+	print brand, brand_size
+	
+
 
         ;ID del Vendedor
         mov eax,0    ;Pone eax en 0
@@ -370,7 +401,8 @@ _start:
 	printInt rbx,numbuf
 	print SLinea,1   ;-------------------Salto de linea
 	
-	
+
+
 
 ;Fin del programa  	
 	
