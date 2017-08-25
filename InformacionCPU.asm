@@ -73,6 +73,24 @@ section .data
         tam_ModeloExt: equ $-ModeloExt
 
 				SLinea db 0xA
+	
+	cache_size db 'Tamano de la Cache de Instrucciones L1 en Bytes = '
+	tam_cache_size: equ $-cache_size
+	
+	cache_size2 db 'Tamano de la Cache de Datos L1 en Bytes = '
+	tam_cache_size2: equ $-cache_size2
+	
+	cacheL2 db 'Tamano de la Cache L2 en Bytes = '
+	cacheL2_size: equ $-cacheL2
+	
+	cacheL3 db 'Tamano de la Cache L3 en Bytes = '
+	cacheL3_size: equ $-cacheL3
+	
+	cores db 'Numero de nucleos = '
+	cores_size: equ $-cores
+
+	brand db 'Brand Id = XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',0xA
+	brand_size: equ $-brand
 
 	cache_size db 'Tamano de la Cache de Instrucciones L1 en Bytes = '
 	tam_cache_size: equ $-cache_size
@@ -117,7 +135,11 @@ _start:
         mov [edi+15],ebx;Copia los primeros 4 bytes en las posiciones de las x
         mov [edi+19],ecx;Copia los primeros 4 bytes en las posiciones de las x
 	mov [edi+23],edx;Copia los primeros 4 bytes en las posiciones de las x
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> refs/remotes/origin/master
 
 	mov eax, 80000003h
 	cpuid
@@ -133,7 +155,11 @@ _start:
 	mov [edi+51],ecx;Copia los primeros 4 bytes en las posiciones de las x
 	mov [edi+55],edx;Copia los primeros 4 bytes en las posiciones de las x
 	print brand, brand_size
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> refs/remotes/origin/master
 
 
         ;ID del Vendedor
@@ -217,6 +243,7 @@ _start:
 				print SLinea,1   ;Salto de linea
 
 				;Fin del programa
+<<<<<<< HEAD
 
 
 
@@ -226,28 +253,54 @@ _start:
 	mov rcx, 0  ;cache
 	cpuid       ;extrae datos de la cache
 
+=======
+				
+
+
+;-------tamano de la cache {L1 instruction cache}
+	
+	mov rax, 4  ;eax en 4
+	mov rcx, 0  ;cache
+	cpuid       ;extrae datos de la cache
+	
+>>>>>>> refs/remotes/origin/master
 	;------extraccion del primer factor para determinar el tamano de la cache
 	mov r11, rbx
 	and r11d, 0xffc00000
 	shr r11, 22
 	add r11, 1
 
+<<<<<<< HEAD
 	;------extraccion del segundo factor para determinar el tamano de la cache
+=======
+	;------extraccion del segundo factor para determinar el tamano de la cache	
+>>>>>>> refs/remotes/origin/master
 
 	mov r12, rbx
 	and r12d, 0x003ff000
 	shr r12, 12
 	add r12, 1
 
+<<<<<<< HEAD
 	;------extraccion del tercer factor para determinar el tamano de la cache
+=======
+	;------extraccion del tercer factor para determinar el tamano de la cache	
+>>>>>>> refs/remotes/origin/master
 	mov r13, rbx
 	and r13d, 0x00000fff
 	add r13, 1
 
+<<<<<<< HEAD
 	;------extraccion del cuarto factor para determinar el tamano de la cache
 	mov r14, rcx
 	add r14,1
 
+=======
+	;------extraccion del cuarto factor para determinar el tamano de la cache	
+	mov r14, rcx
+	add r14,1
+	
+>>>>>>> refs/remotes/origin/master
 	;------calculo de cache
 
    	mov rax,1
@@ -260,38 +313,64 @@ _start:
 	print cache_size,tam_cache_size
 	printInt rbx,numbuf
 	print SLinea,1   ;-------------------Salto de linea
+<<<<<<< HEAD
 
 
 	;####################################################################
 
+=======
+	
+
+	;####################################################################
+	
+>>>>>>> refs/remotes/origin/master
 ;-------tamano de la cache {L1 data cache}
 
 	mov rax, 4  ;eax en 4
 	mov rcx, 1  ;cache
 	cpuid       ;extrae datos de la cache
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> refs/remotes/origin/master
 	;------extraccion del primer factor para determinar el tamano de la cache
 	mov r11, rbx
 	and r11d, 0xffc00000
 	shr r11, 22
 	add r11, 1
 
+<<<<<<< HEAD
 	;------extraccion del segundo factor para determinar el tamano de la cache
+=======
+	;------extraccion del segundo factor para determinar el tamano de la cache	
+>>>>>>> refs/remotes/origin/master
 
 	mov r12, rbx
 	and r12d, 0x003ff000
 	shr r12, 12
 	add r12, 1
 
+<<<<<<< HEAD
 	;------extraccion del tercer factor para determinar el tamano de la cache
+=======
+	;------extraccion del tercer factor para determinar el tamano de la cache	
+>>>>>>> refs/remotes/origin/master
 	mov r13, rbx
 	and r13d, 0x00000fff
 	add r13, 1
 
+<<<<<<< HEAD
 	;------extraccion del cuarto factor para determinar el tamano de la cache
 	mov r14, rcx
 	add r14,1
 
+=======
+	;------extraccion del cuarto factor para determinar el tamano de la cache	
+	mov r14, rcx
+	add r14,1
+	
+>>>>>>> refs/remotes/origin/master
 	;------calculo de cache
 
    	mov rax,1
@@ -304,35 +383,58 @@ _start:
 	print cache_size2,tam_cache_size2
 	printInt rbx,numbuf
 	print SLinea,1   ;-------------------Salto de linea
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> refs/remotes/origin/master
 ;-------tamano de la cache {Cache L2}
 
 	mov rax, 4  ;eax en 4
 	mov rcx, 2  ;cache
 	cpuid       ;extrae datos de la cache
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> refs/remotes/origin/master
 	;------extraccion del primer factor para determinar el tamano de la cache
 	mov r11, rbx
 	and r11d, 0xffc00000
 	shr r11, 22
 	add r11, 1
 
+<<<<<<< HEAD
 	;------extraccion del segundo factor para determinar el tamano de la cache
+=======
+	;------extraccion del segundo factor para determinar el tamano de la cache	
+>>>>>>> refs/remotes/origin/master
 
 	mov r12, rbx
 	and r12d, 0x003ff000
 	shr r12, 12
 	add r12, 1
 
+<<<<<<< HEAD
 	;------extraccion del tercer factor para determinar el tamano de la cache
+=======
+	;------extraccion del tercer factor para determinar el tamano de la cache	
+>>>>>>> refs/remotes/origin/master
 	mov r13, rbx
 	and r13d, 0x00000fff
 	add r13, 1
 
+<<<<<<< HEAD
 	;------extraccion del cuarto factor para determinar el tamano de la cache
 	mov r14, rcx
 	add r14,1
 
+=======
+	;------extraccion del cuarto factor para determinar el tamano de la cache	
+	mov r14, rcx
+	add r14,1
+	
+>>>>>>> refs/remotes/origin/master
 	;------calculo de cache
 
    	mov rax,1
@@ -346,35 +448,58 @@ _start:
 	printInt rbx,numbuf
 	print SLinea,1   ;-------------------Salto de linea
 
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> refs/remotes/origin/master
 ;-------tamano de la cache {Cache L3}
 
 	mov rax, 4  ;eax en 4
 	mov rcx, 3  ;cache
 	cpuid       ;extrae datos de la cache
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> refs/remotes/origin/master
 	;------extraccion del primer factor para determinar el tamano de la cache
 	mov r11, rbx
 	and r11d, 0xffc00000
 	shr r11, 22
 	add r11, 1
 
+<<<<<<< HEAD
 	;------extraccion del segundo factor para determinar el tamano de la cache
+=======
+	;------extraccion del segundo factor para determinar el tamano de la cache	
+>>>>>>> refs/remotes/origin/master
 
 	mov r12, rbx
 	and r12d, 0x003ff000
 	shr r12, 12
 	add r12, 1
 
+<<<<<<< HEAD
 	;------extraccion del tercer factor para determinar el tamano de la cache
+=======
+	;------extraccion del tercer factor para determinar el tamano de la cache	
+>>>>>>> refs/remotes/origin/master
 	mov r13, rbx
 	and r13d, 0x00000fff
 	add r13, 1
 
+<<<<<<< HEAD
 	;------extraccion del cuarto factor para determinar el tamano de la cache
 	mov r14, rcx
 	add r14,1
 
+=======
+	;------extraccion del cuarto factor para determinar el tamano de la cache	
+	mov r14, rcx
+	add r14,1
+	
+>>>>>>> refs/remotes/origin/master
 	;------calculo de cache
 
    	mov rax,1
@@ -388,7 +513,11 @@ _start:
 	printInt rbx,numbuf
 	print SLinea,1   ;-------------------Salto de linea
 
+<<<<<<< HEAD
 
+=======
+	
+>>>>>>> refs/remotes/origin/master
 ;----------------------------numero de nucleos--------------------------
 
 	mov eax,0xb ;---Se carga eax con 0xb para obtener el numero de nucleos en en ebx
@@ -400,6 +529,7 @@ _start:
 	print cores,cores_size
 	printInt rbx,numbuf
 	print SLinea,1   ;-------------------Salto de linea
+<<<<<<< HEAD
 
 
 
@@ -408,6 +538,16 @@ _start:
 
 
 
+=======
+	
+
+
+
+;Fin del programa  	
+	
+
+	
+>>>>>>> refs/remotes/origin/master
 
 
 ;Se liberan los recursos
