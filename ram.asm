@@ -46,6 +46,9 @@ section .data
 
 	nada db ' '
 	tam_nada: equ $-nada
+	
+	bte db ' bytes'
+	tam_bte: equ $-bte
 
 	;SLinea db 0xA
 
@@ -81,11 +84,13 @@ mov r14,[resultado + 0x28]
 impr_texto ram,tam_ram		; imprime encambezado
 
 printInt r15,numbuf
+impr_texto bte,tam_bte
 impr_linea nada,1
 
 impr_texto ram_free,tam_ram_free		; imprime encambezado
 
 printInt r14,numbuf
+impr_texto bte,tam_bte
 impr_linea nada,1
 
 
