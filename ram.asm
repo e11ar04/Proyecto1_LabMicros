@@ -38,10 +38,10 @@
 
 section .data
 
-	ram db 'Memoria RAM total = 0x'
+	ram db 'Memoria RAM total = '
 	tam_ram: equ $-ram
 
-	ram_free db 'Memoria RAM libre = 0x'
+	ram_free db 'Memoria RAM libre = '
 	tam_ram_free: equ $-ram_free
 
 	nada db ' '
