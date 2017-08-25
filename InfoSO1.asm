@@ -57,7 +57,7 @@ InfoSO:
   call print_all_utsname
 
   xor rdi, rdi
-  call exit
+  jmp exit
 
 print_all_utsname:
   xor rcx, rcx
