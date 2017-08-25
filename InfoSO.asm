@@ -43,11 +43,7 @@ section .data
   cons_machine: db 'Machine: '
   cons_tam_machine: equ $-cons_machine
 
-
-section .text
-  global _start
-
-_start:
+InfoSO:
   mov rax, SYS_UNAME
   mov rdi, uname_res
   syscall
@@ -70,7 +66,7 @@ print_all_utsname:
 
   L1:
     push rcx
-    
+
     impr_texto cons_kernel, cons_tam_kernel
 
     mov rax, SYS_WRITE
@@ -96,5 +92,6 @@ print_all_utsname:
   ret
 
 exit:
+ret
   mov rax, SYS_EXIT
   syscall

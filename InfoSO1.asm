@@ -44,10 +44,8 @@ section .data
   cons_tam_machine: equ $-cons_machine
 
 
-section .text
-  global _start
+InfoSO:
 
-_start:
   mov rax, SYS_UNAME
   mov rdi, uname_res
   syscall
@@ -75,7 +73,7 @@ print_all_utsname:
     je kernel
 
     cmp rbx, 65
-    je hostname    
+    je hostname
 
     cmp rbx, 130
     je kernelrelease
@@ -85,7 +83,7 @@ print_all_utsname:
 
     cmp rbx, 260
     je machine
-   
+
    .CNT:
     mov rax, SYS_WRITE
     mov rdx, UTSNAME_SIZE
@@ -110,8 +108,7 @@ print_all_utsname:
   ret
 
 exit:
-  mov rax, SYS_EXIT
-  syscall
+  ret
 
 kernel:
 

@@ -1,16 +1,17 @@
+
 ;Macro-1: impr_texto.
 ;	Imprime un mensaje que se pasa como parametro
 ;	Recibe 2 parametros de entrada:
 ;		%1 es la direccion del texto a imprimir
 ;		%2 es la cantidad de bytes a imprimir
 ;-----------------------------------------------------------------------
-%macro impr_texto 2 	;recibe 2 parametros
-	mov rax,1	;sys_write
-	mov rdi,1	;std_out
-	mov rsi,%1	;primer parametro: Texto
-	mov rdx,%2	;segundo parametro: Tamano texto
-	syscall
-%endmacro
+;%macro impr_texto 2 	;recibe 2 parametros
+	;mov rax,1	;sys_write
+	;mov rdi,1	;std_out
+	;mov rsi,%1	;primer parametro: Texto
+	;mov rdx,%2	;segundo parametro: Tamano texto
+	;syscall
+;%endmacro
 
 
 ;Macro-2: impr_linea.
@@ -44,9 +45,9 @@ section .data
 	tam_ram_free: equ $-ram_free
 
 	tabla: db "0123456789ABCDEF",0
-		
-	SLinea db 0xA
-	
+
+	;SLinea db 0xA
+
 	 cons_nueva_linea: db 0xa
 
 
@@ -60,19 +61,9 @@ resultado: resb 56
 
 
 
-
-
-
-
-
 section .text
-global _start
 
-
-
-
-
-_start:
+InformacionRAM:
 nop
 mov rdi,resultado   		;se le asigna una direccion donde se guarde la info del sistema
 mov rax,0x63       		;se llama a sysinfo
@@ -83,7 +74,7 @@ syscall
 
 impr_texto ram,tam_ram		; imprime encambezado
 
-		
+
 
 mov al,0			;pone a al en 0
 lea ebx,[tabla]			;direcciona los valores de tabla a ebx
@@ -96,7 +87,7 @@ impr_texto salida,1		;imprime el primer simbolo
 
 
 mov edx,[resultado + 0x20]	;busca el primer registro de memoria total de ram
-and edx,0xF0000000		;hace un and y solo deja los 4 bits mas significativos 
+and edx,0xF0000000		;hace un and y solo deja los 4 bits mas significativos
 shr edx,28			;hace un corrimiento de 28 espacios a la derecha
 mov al,dl			;pone en al el valor a buscar en tabla
 xlat
@@ -106,7 +97,7 @@ impr_texto salida,1
 
 mov edx,[resultado + 0x20]	;busca el primer registro de memoria total de ram
 and edx,0x0F000000		;hace un and y solo deja los bits entre [28:24]
-shr edx,24			;hace un corrimiento de 24 espacios a la derecha 
+shr edx,24			;hace un corrimiento de 24 espacios a la derecha
 mov al,dl			;pone en al el valor a buscar en tabla
 xlat
 mov [salida],ax			;pone en la direccion de salida el valor del numero ASCII respectivo a esos 4 bits
@@ -148,7 +139,7 @@ xlat
 mov [salida],ax
 impr_texto salida,1
 
- 
+
 mov edx,[resultado + 0x20]
 and edx,0x000000F0
 shr edx,4
@@ -174,7 +165,7 @@ impr_linea salida,1
 
 impr_texto ram_free,tam_ram_free		; imprime encambezado
 
-		
+
 
 mov al,0			;pone a al en 0
 lea ebx,[tabla]			;direcciona los valores de tabla a ebx
@@ -187,7 +178,7 @@ impr_texto salida,1		;imprime el primer simbolo
 
 
 mov edx,[resultado + 0x28]	;busca el primer registro de memoria ram libre
-and edx,0xF0000000		;hace un and y solo deja los 4 bits mas significativos 
+and edx,0xF0000000		;hace un and y solo deja los 4 bits mas significativos
 shr edx,28			;hace un corrimiento de 28 espacios a la derecha
 mov al,dl			;pone en al el valor a buscar en tabla
 xlat
@@ -197,7 +188,7 @@ impr_texto salida,1
 
 mov edx,[resultado + 0x28]	;busca el primer registro de memoria ram libre
 and edx,0x0F000000		;hace un and y solo deja los bits entre [28:24]
-shr edx,24			;hace un corrimiento de 24 espacios a la derecha 
+shr edx,24			;hace un corrimiento de 24 espacios a la derecha
 mov al,dl			;pone en al el valor a buscar en tabla
 xlat
 mov [salida],ax			;pone en la direccion de salida el valor del numero ASCII respectivo a esos 4 bits
@@ -239,7 +230,7 @@ xlat
 mov [salida],ax
 impr_texto salida,1
 
- 
+
 mov edx,[resultado + 0x28]
 and edx,0x000000F0
 shr edx,4
@@ -260,12 +251,9 @@ impr_linea salida,1
 
 
 
-;Se liberan los recursos
-	mov rax,60 
-	mov rdi,0 
-	mov ebx,0
+;salida
+ret
 
-	
-	
-       syscall  
 
+
+       syscall

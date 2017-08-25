@@ -144,75 +144,108 @@
 ;    This program converts numbers into ASCII characters and
 ;    prints them to stdout.
 ;Imprimir enteros
+;Modificado para ser utilizado como macro
+;Dependencia función divloop
 
-%macro printInt 1
-section .bss
+%macro printInt 2
 
-    numbuf resb 10		; A buffer to store our string of numbers in
+mov rdi,%1	; Move the number to print into rax
 
-section .text
-global _startt
+;itoa
+push rbp
+mov rbp,rsp
+sub rsp,4		; allocate 4 bytes for our local string length counter
 
-_startt:
-    mov rdi,%1	; Move the number (123456789) into rax
-    call itoa		; call the function
+mov rax,rdi		; Move the passed in argument to rax
+lea rdi,[%2+10]	; load the end address of the buffer (past the very end)
+mov rcx,10		; divisor
+mov [rbp-4],dword 0	; rbp-4 will contain 4 bytes representing the length of the string - start at zero
 
-    ; Write the string returned in rax out to stdout
-    mov rdi,rax		; The string pointer is returned in rax - move it to rdi for the function call
-    mov rsi,rcx
-    call print
+call divloop
+leave
 
-    ; Write the newline character to stdout
-    mov rdi,10
-    mov rsi,1
-    call print
+; Write the string returned in rax out to stdout
+mov rdi,rax		; The string pointer is returned in rax - move it to rdi for the function call
+mov rsi,rcx
 
-   ; Exit
-    mov rax,1
-    mov rbx,0
+;print  Args: (rdi: char*, rsi: int)
+mov rax,4
+mov rbx,1
+mov rcx,rdi
+mov rdx,rsi
 
-    int 0x80
+int 0x80
 
-; Args: (rdi: char*, rsi: int)
-print:
+; Write the newline character to stdout
+mov rdi,10
+mov rsi,1
 
-    mov rax,4
-    mov rbx,1
-    mov rcx,rdi
-    mov rdx,rsi
+;print  Args: (rdi: char*, rsi: int)
+mov rax,4
+mov rbx,1
+mov rcx,rdi
+mov rdx,rsi
 
-    int 0x80
+int 0x80
 
-    ret
+; Exit
 
-itoa:
 
-    push rbp
-    mov rbp,rsp
-    sub rsp,4		; allocate 4 bytes for our local string length counter
+%endmacro
 
-    mov rax,rdi		; Move the passed in argument to rax
-    lea rdi,[numbuf+10]	; load the end address of the buffer (past the very end)
-    mov rcx,10		; divisor
-    mov [rbp-4],dword 0	; rbp-4 will contain 4 bytes representing the length of the string - start at zero
+;---------------------------FIN DE MACRO--------------------------------------
 
-.divloop:
-    xor rdx,rdx		; Zero out rdx (where our remainder goes after idiv)
-    idiv rcx		; divide rax (the number) by 10 (the remainder is placed in rdx)
-    add rdx,0x30	; add 0x30 to the remainder so we get the correct ASCII value
-    dec rdi		; move the pointer backwards in the buffer
-    mov byte [rdi],dl	; move the character into the buffer
-    inc dword [rbp-4]	; increase the length
+;-------------------------  MACRO #8  ----------------------------------
+;echo_off
+;Esta es una funcion que sirve para apagar el modo echo en Linux
+;Cuando el modo echo se apaga, Linux NO muestra en la pantalla la tecla que
+;se acaba de presionar.
+;
+;recibe 2 parametros:
+;		%1 es el valor de stdin
+;		%2 es el valor de termios
 
-    cmp rax,0		; was the result zero?
-    jnz .divloop	; no it wasn't, keep looping
+%macro echo_off 2
 
-    mov rax,rdi		; rdi now points to the beginning of the string - move it into rax
-    mov rcx,[rbp-4]	; rbp-4 contains the length - move it into rcx
+	;Se llama a la funcion que lee el estado actual del TERMIOS en STDIN
+	;TERMIOS son los parametros de configuracion que usa Linux para STDIN
+        read_stdin_termios stdin,termios
 
-    leave		; clean up our stack
-    ret
-    %endmacro
+        ;Se escribe el nuevo valor de ECHO en EAX para apagar el echo
+        push rax
+        mov eax, %1
+        not eax
+        and [%2+12], eax
+        pop rax
+
+	;Se escribe la nueva configuracion de TERMIOS
+        write_stdin_termios stdin,termios
+%endmacro
+
+;---------------------------FIN DE MACRO--------------------------------------
+
+;-------------------------  MACRO #9  ----------------------------------
+;echo_on
+;Esta es una funcion que sirve para encender el echo en Linux
+;Cuando el echo se enciende, Linux muestra en la pantalla (stdout) cada tecla
+;que se recibe del teclado (stdin)
+;
+;recibe 1 parametro:
+;
+;		%1 es el valor de termios
+
+%macro echo_on 1
+
+  ;Se llama a la funcion que lee el estado actual del TERMIOS en STDIN
+  ;TERMIOS son los parametros de configuracion que usa Linux para STDIN
+        read_stdin_termios stdin,termios
+
+        ;Se escribe el nuevo valor de modo echo
+        or dword [%1+12], ECHO
+
+  ;Se escribe la nueva configuracion de TERMIOS
+        write_stdin_termios stdin,termios
+%endmacro
 
 
 ;#######################################################################
