@@ -44,7 +44,8 @@ section .data
 	ram_free db 'Memoria RAM libre = 0x'
 	tam_ram_free: equ $-ram_free
 
-	tabla: db "0123456789ABCDEF",0
+	nada db ' '
+	tam_nada: equ $-nada
 
 	;SLinea db 0xA
 
@@ -75,178 +76,18 @@ syscall
 impr_texto ram,tam_ram		; imprime encambezado
 
 
+mov r15,[resultado + 0x20]	
+mov r14,[resultado + 0x28]
+impr_texto ram,tam_ram		; imprime encambezado
 
-mov al,0			;pone a al en 0
-lea ebx,[tabla]			;direcciona los valores de tabla a ebx
-mov edx,[resultado + 0x24]	;busca el segundo registro de memoria total de ram
-and edx,0x0000000F		;hace un and y deja solo los ultimos 4 bits del registro
-mov al,dl			;pone en al el valor a buscar en tabla
-xlat
-mov [salida],ax			;pone en la direccion de salida el valor del numero ASCII respectivo a esos 4 bits
-impr_texto salida,1		;imprime el primer simbolo
-
-
-mov edx,[resultado + 0x20]	;busca el primer registro de memoria total de ram
-and edx,0xF0000000		;hace un and y solo deja los 4 bits mas significativos
-shr edx,28			;hace un corrimiento de 28 espacios a la derecha
-mov al,dl			;pone en al el valor a buscar en tabla
-xlat
-mov [salida],ax			;pone en la direccion de salida el valor del numero ASCII respectivo a esos 4 bits
-impr_texto salida,1
-
-
-mov edx,[resultado + 0x20]	;busca el primer registro de memoria total de ram
-and edx,0x0F000000		;hace un and y solo deja los bits entre [28:24]
-shr edx,24			;hace un corrimiento de 24 espacios a la derecha
-mov al,dl			;pone en al el valor a buscar en tabla
-xlat
-mov [salida],ax			;pone en la direccion de salida el valor del numero ASCII respectivo a esos 4 bits
-impr_texto salida,1
-
-
-mov edx,[resultado + 0x20]
-and edx,0x00F00000
-shr edx,20
-mov al,dl
-xlat
-mov [salida],ax
-impr_texto salida,1
-
-
-mov edx,[resultado + 0x20]
-and edx,0x000F0000
-shr edx,16
-mov al,dl
-xlat
-mov [salida],ax
-impr_texto salida,1
-
-
-mov edx,[resultado + 0x20]
-and edx,0x0000F000
-shr edx,12
-mov al,dl
-xlat
-mov [salida],ax
-impr_texto salida,1
-
-
-mov edx,[resultado + 0x20]
-and edx,0x00000F00
-shr edx,8
-mov al,dl
-xlat
-mov [salida],ax
-impr_texto salida,1
-
-
-mov edx,[resultado + 0x20]
-and edx,0x000000F0
-shr edx,4
-mov al,dl
-xlat
-mov [salida],ax
-impr_texto salida,1
-
-
-mov edx,[resultado + 0x20]
-and edx,0x0000000F
-
-mov al,dl
-xlat
-mov [salida],ax
-impr_linea salida,1
-
-		;FINALIZA BUSCAR RAM TOTAL
-
-
-		;INICIA BUSCAR MEM RAM LIBRE
-
+printInt r15,numbuf
+impr_linea nada,1
 
 impr_texto ram_free,tam_ram_free		; imprime encambezado
 
+printInt r14,numbuf
+impr_linea nada,1
 
-
-mov al,0			;pone a al en 0
-lea ebx,[tabla]			;direcciona los valores de tabla a ebx
-mov edx,[resultado + 0x2c]	;busca el segundo registro de memoria ram libre
-and edx,0x0000000F		;hace un and y deja solo los ultimos 4 bits del registro
-mov al,dl			;pone en al el valor a buscar en tabla
-xlat
-mov [salida],ax			;pone en la direccion de salida el valor del numero ASCII respectivo a esos 4 bits
-impr_texto salida,1		;imprime el primer simbolo
-
-
-mov edx,[resultado + 0x28]	;busca el primer registro de memoria ram libre
-and edx,0xF0000000		;hace un and y solo deja los 4 bits mas significativos
-shr edx,28			;hace un corrimiento de 28 espacios a la derecha
-mov al,dl			;pone en al el valor a buscar en tabla
-xlat
-mov [salida],ax			;pone en la direccion de salida el valor del numero ASCII respectivo a esos 4 bits
-impr_texto salida,1
-
-
-mov edx,[resultado + 0x28]	;busca el primer registro de memoria ram libre
-and edx,0x0F000000		;hace un and y solo deja los bits entre [28:24]
-shr edx,24			;hace un corrimiento de 24 espacios a la derecha
-mov al,dl			;pone en al el valor a buscar en tabla
-xlat
-mov [salida],ax			;pone en la direccion de salida el valor del numero ASCII respectivo a esos 4 bits
-impr_texto salida,1
-
-
-mov edx,[resultado + 0x28]
-and edx,0x00F00000
-shr edx,20
-mov al,dl
-xlat
-mov [salida],ax
-impr_texto salida,1
-
-
-mov edx,[resultado + 0x28]
-and edx,0x000F0000
-shr edx,16
-mov al,dl
-xlat
-mov [salida],ax
-impr_texto salida,1
-
-
-mov edx,[resultado + 0x28]
-and edx,0x0000F000
-shr edx,12
-mov al,dl
-xlat
-mov [salida],ax
-impr_texto salida,1
-
-
-mov edx,[resultado + 0x20]
-and edx,0x00000F00
-shr edx,8
-mov al,dl
-xlat
-mov [salida],ax
-impr_texto salida,1
-
-
-mov edx,[resultado + 0x28]
-and edx,0x000000F0
-shr edx,4
-mov al,dl
-xlat
-mov [salida],ax
-impr_texto salida,1
-
-
-mov edx,[resultado + 0x28]
-and edx,0x0000000F
-
-mov al,dl
-xlat
-mov [salida],ax
-impr_linea salida,1
 
 
 
