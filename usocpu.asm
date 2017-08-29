@@ -1,4 +1,4 @@
-;macros a utilizar:
+;;macros a utilizar:
 %include "mac.mac"
 
 ;strings que se imprimen a traves de la corrida del programa:
