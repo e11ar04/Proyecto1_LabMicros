@@ -1,4 +1,4 @@
-;MACRO 1
+;;MACRO 1
 ;no recibe parametros
 ;es para terminar un programa x86_64
 %macro exit 0
