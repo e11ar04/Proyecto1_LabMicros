@@ -1,4 +1,4 @@
-;;MACRO 1
+;MACRO 1
 ;no recibe parametros
 ;es para terminar un programa x86_64
 %macro exit 0
@@ -31,9 +31,11 @@
         syscall
 %endmacro
 
+
 ;MACRO 3
 ;recibe 2 parametros, el primero de 16 reserved bytes y el segundo de 8 reserved bytes
 ;imprime un numero entero de cualquier tamano
+;Modificado a partir de: https://pastebin.com/PN2jKVae
 %macro printnum 2
 %%_printnum:
         mov rcx, %1
@@ -75,6 +77,7 @@
         jge %%_printnumloop2
 %endmacro
 
+
 ;MACRO 4
 ;al llamar este macro se guarda en eax la cantidad de nucleos del procesador
 %macro cantnuc 0
@@ -84,3 +87,72 @@
         mov r10d, ebx
         and ebx, 0x0000ffff
 %endmacro
+
+
+;MACRO 4
+; Simon Whitehead, 2015
+;This program converts numbers into ASCII characters and
+;prints them to stdout.
+;Imprimir enteros de cualquier tamano sin enter al final
+;Modificado para ser utilizado como macro
+;Dependencia función divloop
+
+%macro printInt 2
+        mov rdi,%1	; Move the number to print into rax
+
+        ;itoa
+        push rbp
+        mov rbp,rsp
+        sub rsp,4		; allocate 4 bytes for our local string length counter
+
+        mov rax,rdi		; Move the passed in argument to rax
+        lea rdi,[%2+10]	; load the end address of the buffer (past the very end)
+        mov rcx,10		; divisor
+        mov [rbp-4],dword 0	; rbp-4 will contain 4 bytes representing the length of the string - start at zero
+
+        call divloop
+        leave
+
+        ; Write the string returned in rax out to stdout
+        mov rdi,rax		; The string pointer is returned in rax - move it to rdi for the function call
+        mov rsi,rcx
+
+        ;print  Args: (rdi: char*, rsi: int)
+        mov rax,4
+        mov rbx,1
+        mov rcx,rdi
+        mov rdx,rsi
+
+        int 0x80
+
+        ; Write the newline character to stdout
+        mov rdi,10
+        mov rsi,1
+
+        ;print  Args: (rdi: char*, rsi: int)
+        mov rax,4
+        mov rbx,1
+        mov rcx,rdi
+        mov rdx,rsi
+
+        int 0x80
+%endmacro
+
+
+;Loop necesario para utilizar el macro printInt (MACRO 5)
+        ; Loop de division necesario para el macro printInt
+        divloop:
+        xor rdx,rdx		; Zero out rdx (where our remainder goes after idiv)
+        idiv rcx		; divide rax (the number) by 10 (the remainder is placed in rdx)
+        add rdx,0x30	; add 0x30 to the remainder so we get the correct ASCII value
+        dec rdi		; move the pointer backwards in the buffer
+        mov byte [rdi],dl	; move the character into the buffer
+        inc dword [rbp-4]	; increase the length
+
+        cmp rax,0		; was the result zero?
+        jnz divloop	; no it wasn't, keep looping
+
+        mov rax,rdi		; rdi now points to the beginning of the string - move it into rax
+        mov rcx,[rbp-4]	; rbp-4 contains the length - move it into rcx
+
+        ret
