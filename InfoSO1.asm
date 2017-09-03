@@ -1,3 +1,6 @@
+;Base de Codigo tomado de author: mmxm (https://github.com/hc0d3r/asm/blob/master/uname.asm) y modificado y adaptado por
+;John Junier Thomas(John-JT)
+
 SYS_WRITE equ 1
 SYS_UNAME equ 63
 SYS_EXIT equ 60
