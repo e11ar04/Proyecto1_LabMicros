@@ -357,6 +357,7 @@
 ;convierte un "numero" que esta como string ascii (tomado de consola) en un entero
 ;es decir, toma un numero de consola (que en realidad es un string) y lo convierte en un numero entero
 ;convierte el string que esta almacenado en rax inmediatamente antes de su llamada.
+;Modificado a partir de: http://asmtutor.com/#lesson16
 %macro atoi 0
         push    rbx             ; preserve ebx on the stack to be restored after function runs
         push    rcx             ; preserve ecx on the stack to be restored after function runs
