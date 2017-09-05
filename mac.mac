@@ -89,14 +89,13 @@
 %endmacro
 
 
-;MACRO 4
+;MACRO 5
 ; Simon Whitehead, 2015
 ;This program converts numbers into ASCII characters and
 ;prints them to stdout.
 ;Imprimir enteros de cualquier tamano sin enter al final
 ;Modificado para ser utilizado como macro
 ;Dependencia función divloop
-
 %macro printInt 2
         mov rdi,%1	; Move the number to print into rax
 
@@ -136,6 +135,19 @@
         mov rdx,rsi
 
         int 0x80
+%endmacro
+
+
+;MACRO 6
+;Lee un mensaje del teclado y se almacena en la variable que se pasa como parametro
+;Recibe 2 parametros de entrada: primero la direccion de memoria donde se guarda el texto
+;y segundo es la cantidad de bytes a guardar
+%macro read 2
+      	mov rax,0	       ;sys_read
+      	mov rdi,0	       ;std_input
+      	mov rsi,%1	     ;primer parametro: Variable
+      	mov rdx,%2	     ;segundo parametro: Tamano
+      	syscall
 %endmacro
 
 

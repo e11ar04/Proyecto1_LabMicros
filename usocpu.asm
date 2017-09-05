@@ -35,23 +35,25 @@ _start:
         mov eax, ebx
         printnum numbufx, numbufy
 
+        mov rax, inputseg
+        printstring
 
+        read seconds, 8
+        mov rax, 1
+        mov rdi, 1
+        mov rsi, seconds
+        mov rdx, 8
+        syscall
 
-        ;mov r13, 10
-        ;inc r13
-
-;_usocpu:
-        ;cmp r13, 1
-        ;je _exit
-
-        mov rax, 99             ;se extraen los primeros 4 bytes que da sys_sysinfo
+_loopusocpu:
+        mov rax, 99             ;se extraen los primeros 4 bytes que da sys_sysinfo (99=sys_sysinfo)
         mov rdi, cpuload0       ;se guarda en cpuload0
         syscall
 
         mov rax, infocpu1       ;titulo
         printstring
                                 ;se calcula el porcentaje de uso:
-        mov rax, [cpuload0+8]
+        mov rax, [cpuload0+8]   ;segundo byte de cpuload0 es carga en el CPU en el ultimo min
 
         mov rdx, 0              ;se divide entre la cantidad de nucleos
         div r15d
@@ -59,7 +61,7 @@ _start:
         cmp rax, 65536
         jg _cienporciento       ;si la carga del CPU es mayor a 65536, entonces el % de uso
                                 ;va dar mayor a 100, entonces simplemente deberia ser 100%
-_siga:
+_siga1:
         mov rcx, 1000
         mul rcx                 ;se multiplica por mil para ver los decimales
 
@@ -82,12 +84,15 @@ _siga:
         mov rax, porcentaje
         printstring
 
-        ;dec r13
-        ;jmp _usocpu
+        mov r10, 1
+_loopseg:
+        inc r10
+        cmp r10, 2140000000
+        jl _loopseg
 
-;_exit:
+_exit:
         exit
 
 _cienporciento:
         mov rax, 65536          ;fuerza un valor de 100% de uso
-        jmp _siga
+        jmp _siga1
