@@ -9,23 +9,6 @@
 
 section .data
 
-; Loop de division necesario para el macro printInt
-divloop:
-xor rdx,rdx		; Zero out rdx (where our remainder goes after idiv)
-idiv rcx		; divide rax (the number) by 10 (the remainder is placed in rdx)
-add rdx,0x30	; add 0x30 to the remainder so we get the correct ASCII value
-dec rdi		; move the pointer backwards in the buffer
-mov byte [rdi],dl	; move the character into the buffer
-inc dword [rbp-4]	; increase the length
-
-cmp rax,0		; was the result zero?
-jnz divloop	; no it wasn't, keep looping
-
-mov rax,rdi		; rdi now points to the beginning of the string - move it into rax
-mov rcx,[rbp-4]	; rbp-4 contains the length - move it into rcx
-
-ret
-
 ;Datos de InformacionCPU
 
 ;Información  a Imprimir
