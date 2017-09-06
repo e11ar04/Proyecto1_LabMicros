@@ -76,7 +76,7 @@ syscall
 
 			;INICIA BUSCAR MEM RAM TOTAL
 
-impr_texto ram,tam_ram		; imprime encambezado
+
 
 
 mov r15,[resultado + 0x20]	
