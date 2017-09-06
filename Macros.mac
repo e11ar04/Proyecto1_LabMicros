@@ -414,6 +414,34 @@
 
 
 
+;-------------------------  MACRO #16 ----------------------------------
+;permite escribir en un archivo, posee 3 parametros:
+;1-registro que contiene el 'file descriptor', el macro 15 lo deja en rax
+;2-texto que se va escribir en el archivo
+;3-tamano del texto a escribir en el archivo
+%macro writefile 3
+        mov rdi, %1
+        mov rax, 1
+        mov rsi, %2
+        mov rdx, %3
+        syscall
+%endmacro
+;---------------------------FIN DE MACRO--------------------------------------
+
+
+
+;-------------------------  MACRO #17 ----------------------------------
+;macro para cerrar un archivo, recibe un parametro que es el registro que
+;contiene el 'file descriptor', el macro 16 lo deja en rdi
+%macro closefile 1
+        mov rax, 3
+        pop %1
+        syscall
+%endmacro
+;---------------------------FIN DE MACRO--------------------------------------
+
+
+
 ;-------------------------  DIVLOOP  ----------------------------------
 ;Loop necesario para utilizar el macro printInt (MACRO 5)
         ; Loop de division necesario para el macro printInt
