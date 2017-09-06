@@ -1,5 +1,5 @@
 ;macros a utilizar:
-%include "Macros.mac"
+;%include "Macros.mac"
 
 ;strings que se imprimen a traves de la corrida del programa:
 section .data
@@ -12,22 +12,15 @@ section .data
         porcentaje db "%",10,0
         inputseg db "  Cuantos segundos desea correr el programa? ",0
 
-;bytes utilizados para almacenar lo que se extrae del llamado sys_sysinfo, lo que se desea
-;imprimir de lo extraido y tambien donde se almacena input del usuario
-section .bss
-        cpuload0 resb 4         ;se almacenan los primeros 4 bytes que da sys_sysinfo
-        numbufx resb 16         ;bytes utilizados para imprimir numeros enteros
-        numbufy resb 8
-        seconds resb 8          ;almacena la cantidad de segundos que se va correr el programa
-        resultado resb 1
 
 ;programa principal:
-section .text
-        global _start
-        global _break1
+;section .text
+        ;global _start
+        ;global _break1
 
 ;--------------------------------------Inicio de programa---------------------------------------------
-_start:
+;_start:
+UsoCPU:
         mov rax, infocpu0       ;se imprimen titulos
         printstring
         mov rax, ncores
@@ -80,7 +73,7 @@ _siga1:
         mov rdx, 0
         div rcx                 ;se divide entre 10 para tener la parte entera en un registro
         mov r15, rdx            ;y la parte decimal en otro registro
-        mov [resultado], rax
+        mov [resultadoo], rax
 _break1:
         printInt rax, numbufx   ;se imprime el % de uso del cpu (parte entera)
 
@@ -105,8 +98,8 @@ _loopseg:
 
 
 _exit:                          ;termina el programa
-
-        exit
+        ret
+        ;exit
 
 
 _cienporciento:

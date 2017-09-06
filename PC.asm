@@ -12,10 +12,16 @@
 %include "InformacionCPU.asm"
 %include "InfoSO1.asm"
 %include "ram.asm"
+%include "usocpu.asm"
 
 section .bss
 				;Para el Macro printInt
 				 numbuf resb 10		; A buffer to store our string of numbers in
+				 cpuload0 resb 4         ;se almacenan los primeros 4 bytes que da sys_sysinfo
+			   numbufx resb 16         ;bytes utilizados para imprimir numeros enteros
+			   numbufy resb 8
+			   seconds resb 8          ;almacena la cantidad de segundos que se va correr el programa
+			   resultadoo resb 1
 
 
 ;--------------------Segmento de datos--------------------
@@ -25,7 +31,7 @@ section .data
 
 
   ;Instrucciones
-	instrucciones: db 'Elija la información que desea visualizar: ' ,  0Ah	,0Ah,'1-Información del Microprocesador ',0Ah	,	'2-Información de la Memoria RAM ',0Ah	,'3-Información del SO ', 0xa	,'4-Porcentaje de uso del CPU ', 0xa ,'5-Salir', 0xa,  0Ah		; Instrucciones para el usuario
+	instrucciones: db 'Elija la información que desea visualizar: ' ,  0Ah	,0Ah,'1-Información del Microprocesador ',0Ah	,	'2-Información de la Memoria RAM ',0Ah	,'3-Información del SO ', 0xa	,'4-Porcentaje de uso del CPU ',0Ah	,'5-Información del disco duro ', 0xa ,'6-Salir', 0xa,  0Ah		; Instrucciones para el usuario
 	tam_instrucciones: equ $-instrucciones					; Longitud
 
 	tecla: db ''													;Almacenamiento de la tecla capturada
@@ -86,7 +92,9 @@ section .data
 		mov r10b,'1' ;Guarda en r10 un  1
 		mov r11b,'2' ;;Guarda en r11 un  2
 		mov r12b,'3' ;;Guarda en r12 un  3
-		mov r13b,'4' ;;Guarda en r12 un  4
+		mov r13b,'4' ;;Guarda en r13 un  4
+		mov r14b,'5' ;;Guarda en r14 un  5
+		mov r15b,'6' ;;Guarda en r15 un  6
 	_break:
 
 		;Comparación de la tecla ingresada con cada opción
@@ -97,6 +105,10 @@ section .data
 		cmp r12b,r9b
 		je .so
 		cmp r13b,r9b
+		je .usocpu
+		cmp r14b,r9b
+		je .hdd
+		cmp r15b,r9b
 		je .fin
 
 		;Opción Incorrecta reinicia el menú
@@ -119,6 +131,19 @@ section .data
 		print limpiar,tam_limpiar;Limpia la consola
 		print inst3, tam_inst3;Impresión de la inctrucción
 		call InfoSO;Obtiene la información del Sistema Operativo
+		jmp .reinicio
+
+	.usocpu:
+		print limpiar,tam_limpiar;Limpia la consola
+		canonical_on ICANON,termios     ;Vuelve a encender el modo canonical
+		echo_on termios								  ;Vuelve a encender el echo de Linux
+		call UsoCPU;Obtiene la información del Sistema Operativo
+		canonical_off ICANON,termios     ;Vuelve a apagar el modo canonical
+		echo_off ECHO,termios								;Vuelve a apagar el echo de Linux
+		jmp .reinicio
+
+	.hdd:
+		print limpiar,tam_limpiar;Limpia la consola
 
 	.reinicio:
 	 print volver,tam_volver;Impresión del mensaje
