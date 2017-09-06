@@ -33,20 +33,29 @@ http://wiki.osdev.org/Detecting_Memory_%28x86%29
 
 
 -syscall
+
 http://man7.org/linux/man-pages/man2/
+
 http://blog.rchapman.org/posts/Linux_System_Call_Table_for_x86_64/
 
 -comandos disco duro
+
 http://www.binarytides.com/linux-command-check-disk-partitions/
 
 -info comando uptime y carga del cpu
+
 https://www.computerhope.com/unix/uptime.htm
+
 https://unix.stackexchange.com/questions/118124/why-how-does-uptime-show-cpu-load-1
+
 http://blog.scoutapp.com/articles/2009/07/31/understanding-load-averages
+
 http://www.linuxjournal.com/article/9001
 
 -sys info
+
 https://stackoverflow.com/questions/12303141/can-not-understand-load-returned-by-sysinfo
 
 -atoi
+
 http://asmtutor.com/#lesson16
