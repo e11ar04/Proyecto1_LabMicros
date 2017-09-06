@@ -32,6 +32,7 @@ http://wiki.osdev.org/Detecting_Memory_%28x86%29
 
 
 
+
 -syscall
 
 http://man7.org/linux/man-pages/man2/
