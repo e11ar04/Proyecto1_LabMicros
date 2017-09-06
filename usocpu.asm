@@ -68,14 +68,15 @@ _loopusocpu:
         jg _cienporciento       ;si la carga del CPU es mayor a 65536, entonces el % de uso
                                 ;va dar mayor a 100, entonces simplemente deberia ser 100%
 _siga1:
+
         mov rcx, 1000
         mul rcx                 ;se multiplica por mil para ver los decimales
 
-        mov rcx, 65536
-        mov rdx, 0              ;se divide entre 2^16 para obtener el numero en forma decimal
-        div rcx
+        ;mov rcx, 65536
+        ;mov rdx, 0              ;se divide entre 2^16 para obtener el numero en forma decimal
+        ;div rcx
 
-        mov rcx, 10
+        mov rcx, 6553 ;Se dividio entre 10 de una vez
         mov rdx, 0
         div rcx                 ;se divide entre 10 para tener la parte entera en un registro
         mov r15, rdx            ;y la parte decimal en otro registro
@@ -104,6 +105,7 @@ _loopseg:
 
 
 _exit:                          ;termina el programa
+
         exit
 
 

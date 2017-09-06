@@ -51,21 +51,21 @@ InfoSO:
 
   mov rax, SYS_UNAME
   mov rdi, uname_res
-  syscall            ;Básicamente esta es la parte donde se busca la información del sistema operativo proveniente del comando en consola 
+  syscall            ;Básicamente esta es la parte donde se busca la información del sistema operativo proveniente del comando en consola
   		     ; uname
 
   mov rdi, 1
   cmp rax, 0
-  jne exit
+  jne exit1
 
   call print_all_utsname
 
   xor rdi, rdi
-  jmp exit
+  jmp exit1
 
 print_all_utsname:
   xor rcx, rcx
-  xor rbx, rbx 
+  xor rbx, rbx
   mov cl, 5
 
   mov rdi, STDOUT
@@ -76,7 +76,7 @@ print_all_utsname:
 			;Estas comparaciones se dan cada 65 bits porque la información de cada uno de los apartados del comando "uname"
 			;están contenidas en arreglos de ese tamaño. Por lo tanto, se hace la comparación se imprime el string respectivo
 			;y contiguamente se imprime la información que corresponde a ese apartado del sistema operativo.
-    cmp rbx, 0		
+    cmp rbx, 0
     je kernel
 
     cmp rbx, 65
@@ -92,9 +92,9 @@ print_all_utsname:
     je machine
 
    .CNT:
-   				;Esta parte se encarga de tanto imprimir la información del sistema operativo en consola, además suma 
-				;65 bits cada vez que ya se imprimió la información de la posición en memoria previa para continuar 
-				;con el resto de apartados del sistema operativo.				
+   				;Esta parte se encarga de tanto imprimir la información del sistema operativo en consola, además suma
+				;65 bits cada vez que ya se imprimió la información de la posición en memoria previa para continuar
+				;con el resto de apartados del sistema operativo.
     mov rax, SYS_WRITE
     mov rdx, UTSNAME_SIZE
     lea rsi, [uname_res + rbx]
@@ -119,7 +119,7 @@ print_all_utsname:
 
   ret
 
-exit:
+exit1:
   ret
 
 			; De esta línea en adelante se llaman las funciones respectivas para imprimir los strings que acompañan

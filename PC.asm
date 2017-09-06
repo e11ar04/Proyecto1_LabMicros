@@ -25,7 +25,7 @@ section .data
 
 
   ;Instrucciones
-	instrucciones: db 'Elija la información que desea visualizar: ' ,  0Ah	,0Ah,'1-Información del Microprocesador ',0Ah	,	'2-Información de la Memoria RAM ',0Ah	,'3-Información del SO ', 0xa	,'4-Salir', 0xa,  0Ah		; Instrucciones para el usuario
+	instrucciones: db 'Elija la información que desea visualizar: ' ,  0Ah	,0Ah,'1-Información del Microprocesador ',0Ah	,	'2-Información de la Memoria RAM ',0Ah	,'3-Información del SO ', 0xa	,'4-Porcentaje de uso del CPU ', 0xa ,'5-Salir', 0xa,  0Ah		; Instrucciones para el usuario
 	tam_instrucciones: equ $-instrucciones					; Longitud
 
 	tecla: db ''													;Almacenamiento de la tecla capturada
