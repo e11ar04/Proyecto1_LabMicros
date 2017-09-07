@@ -30,9 +30,10 @@ section .bss
 ;--------------------------------------Inicio de programa---------------------------------------------
 ;programa principal:
 section .text
-        global _start
+        ;global _start
 
-_start:
+;_start:
+infocpu:
         mov rax, infocpu0       ;se imprimen titulos
         printstring
         mov rax, ncores
@@ -191,7 +192,8 @@ _loopseg:
 ;--------------------------------------Fin de Programa------------------------------------------------
 _exit:
         closefile r13           ;cierra el archivo de texto
-        exit                    ;macro que termina el programa
+        ;exit                    ;macro que termina el programa
+        ret
 
 
 ;---------------------------------------Funciones Extra-----------------------------------------------
