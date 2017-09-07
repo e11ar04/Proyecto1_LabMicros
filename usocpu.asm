@@ -33,7 +33,7 @@ section .text
         ;global _start
 
 ;_start:
-infocpu:
+UsoCPU:
         mov rax, infocpu0       ;se imprimen titulos
         printstring
         mov rax, ncores
