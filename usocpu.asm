@@ -13,6 +13,7 @@ section .data
         decimal db ".",0
         porcentaje db "%",10,0
         inputseg db "  Cuantos segundos desea correr el programa? ",0
+        file db "usocpu.txt",0
 
 
 ;----------------------------------------Bytes Reservados-----------------------------------------------
@@ -23,6 +24,7 @@ section .bss
         numbufx resb 16         ;bytes utilizados para imprimir numeros enteros
         numbufy resb 8
         seconds resb 8          ;almacena la cantidad de segundos que se va correr el programa
+        cargacpu1 resb 8
 
 
 ;--------------------------------------Inicio de programa---------------------------------------------
@@ -49,6 +51,10 @@ _start:
         atoi                    ;se pasa de string a entero los segundos,
         mov r14, rax            ;y queda almacenado en r14, se va utilizar como un "contador"
         inc r14                 ;para definir un el ciclo "_loopusocpu"
+
+        mov r13, file
+        openfile r13, 65, 0777o ;se abre el archivo donde se se va escribir el % de uso del cpu
+        mov r13, rax
 
 
 ;--------------------------------------Ciclo General------------------------------------------------
@@ -86,6 +92,8 @@ _siga1:
         mov r15, rdx            ;y la parte decimal en otro registro
 
         printInt rax, numbufx   ;se imprime el % de uso del cpu (parte entera)
+        mov [cargacpu1], rdi
+        writefile r13, cargacpu1, 8
 
         mov rax, decimal        ;se imprime un punto decimal
         printstring
@@ -181,8 +189,9 @@ _loopseg:
 
 
 ;--------------------------------------Fin de Programa------------------------------------------------
-_exit:                          ;macro que termina el programa
-        exit
+_exit:
+        closefile r13           ;cierra el archivo de texto
+        exit                    ;macro que termina el programa
 
 
 ;---------------------------------------Funciones Extra-----------------------------------------------
