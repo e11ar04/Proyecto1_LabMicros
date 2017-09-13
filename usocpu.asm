@@ -1,4 +1,4 @@
-;;--------------------------------------Macros del Programa---------------------------------------------
+;--------------------------------------Macros del Programa---------------------------------------------
 %include "Macros.mac"
 
 
@@ -14,6 +14,7 @@ section .data
         porcentaje db "%",10,0
         inputseg db "  Cuantos segundos desea correr el programa? ",0
         file db "usocpu.txt",0
+        usocpu db "    "
 
 
 ;----------------------------------------Bytes Reservados-----------------------------------------------
@@ -24,22 +25,29 @@ section .bss
         numbufx resb 16         ;bytes utilizados para imprimir numeros enteros
         numbufy resb 8
         seconds resb 8          ;almacena la cantidad de segundos que se va correr el programa
-        cargacpu1 resb 8
+        residuo resb 8
 
 
 ;--------------------------------------Inicio de programa---------------------------------------------
 ;programa principal:
 section .text
-        ;global _start
+        global _start
 
-;_start:
-UsoCPU:
+;REGISTROS GLOBALES
+;r15 - cantidad de nucleos del CPU
+;r14 - contador para definir el ciclo uso_cpu
+;r13 - file descriptor de usocpu.txt
+;r12 - intermediario para escribir en .txt
+
+;rbx - se utiliza para multiplicar y dividir
+;rax - cambia continuamente
+_start:
         mov rax, infocpu0       ;se imprimen titulos
         printstring
         mov rax, ncores
         printstring
 
-        cantnuc                 ;se imprime la cantidad de nucleos, queda almacenado en rbx y r15
+        cantnuc                 ;se imprime la cantidad de nucleos, queda almacenado en r15
         mov r15d, ebx
         mov eax, ebx
         printnum numbufx, numbufy
@@ -54,7 +62,7 @@ UsoCPU:
         inc r14                 ;para definir un el ciclo "_loopusocpu"
 
         mov r13, file
-        openfile r13, 65, 0777o ;se abre el archivo donde se se va escribir el % de uso del cpu
+        openfile r13, 66, 0666o ;se abre el archivo donde se se va escribir el % de uso del cpu
         mov r13, rax
 
 
@@ -80,34 +88,26 @@ _loopusocpu:
         jg _cienporciento1      ;si la carga del CPU es mayor a 65536, entonces el % de uso
                                 ;va dar mayor a 100, entonces simplemente deberia ser 100%
 _siga1:
-        mov rcx, 1000
-        mul rcx                 ;se multiplica por mil para ver los decimales
+        mov rbx, 100
+        mul rbx                 ;se multiplica por mil para ver los decimales
 
-        mov rcx, 65536
+        mov rbx, 65536
         mov rdx, 0              ;se divide entre 2^16 para obtener el numero en forma decimal
-        div rcx
+        div rbx
 
-        mov rcx, 10
-        mov rdx, 0
-        div rcx                 ;se divide entre 10 para tener la parte entera en un registro
-        mov r15, rdx            ;y la parte decimal en otro registro
-
+        mov r12, rax
         printInt rax, numbufx   ;se imprime el % de uso del cpu (parte entera)
-        mov [cargacpu1], rdi
-        writefile r13, cargacpu1, 8
 
-        mov rax, decimal        ;se imprime un punto decimal
-        printstring
-
-        mov rax, r15
-        printInt rax, numbufx   ;se imprime la parte decimal del porcentaje de uso
+        mov rax, r12
+        filenum usocpu
+        writefile r13, usocpu, 4
 
         mov rax, porcentaje     ;se imprime signo de porcentaje
         printstring
 
 ;-------Porcentaje de uso del cpu en los ultimos 5 minutos
         mov rax, infocpu2       ;Se repiten las ultimas lineas de codigo pero con cpuload0+16
-        printstring
+        printstring             ;Ademas, en esta seccion no se escribe sobre archivos de texto
 
         mov rax, [cpuload0+16]
 
@@ -118,24 +118,13 @@ _siga1:
         jg _cienporciento2
 
 _siga2:
-        mov rcx, 1000
-        mul rcx
+        mov rbx, 100
+        mul rbx
 
-        mov rcx, 65536
+        mov rbx, 65536
         mov rdx, 0
-        div rcx
+        div rbx
 
-        mov rcx, 10
-        mov rdx, 0
-        div rcx
-        mov r15, rdx
-
-        printInt rax, numbufx
-
-        mov rax, decimal
-        printstring
-
-        mov rax, r15
         printInt rax, numbufx
 
         mov rax, porcentaje
@@ -143,7 +132,7 @@ _siga2:
 
 ;-------Porcentaje de uso del cpu en los ultimos 15 minutos
         mov rax, infocpu3       ;Se repiten las ultimas lineas de codigo pero con cpuload0+24
-        printstring
+        printstring             ;Ademas, en esta seccion no se escribe sobre archivos de texto
 
         mov rax, [cpuload0+24]
 
@@ -154,24 +143,13 @@ _siga2:
         jg _cienporciento3
 
 _siga3:
-        mov rcx, 1000
-        mul rcx
+        mov rbx, 100
+        mul rbx
 
-        mov rcx, 65536
+        mov rbx, 65536
         mov rdx, 0
-        div rcx
+        div rbx
 
-        mov rcx, 10
-        mov rdx, 0
-        div rcx
-        mov r15, rdx
-
-        printInt rax, numbufx
-
-        mov rax, decimal
-        printstring
-
-        mov rax, r15
         printInt rax, numbufx
 
         mov rax, porcentaje
@@ -182,7 +160,7 @@ _siga3:
         mov r10, 1         ;loop que genera un delay de aprox 1 segundo con una suma y una comparacion
 _loopseg:
         inc r10
-        cmp r10, 2140000000
+        cmp r10, 2100000000
         jl _loopseg
 
         cmp r14, 1              ;compara el contador para saber si el programa debe seguir
@@ -192,13 +170,13 @@ _loopseg:
 ;--------------------------------------Fin de Programa------------------------------------------------
 _exit:
         closefile r13           ;cierra el archivo de texto
-        ;exit                    ;macro que termina el programa
-        ret
+        exit                    ;macro que termina el programa
 
 
 ;---------------------------------------Funciones Extra-----------------------------------------------
+;fuerza un valor de 100% de uso
 _cienporciento1:
-        mov rax, 65536          ;fuerza un valor de 100% de uso
+        mov rax, 65536
         jmp _siga1
 
 _cienporciento2:
