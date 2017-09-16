@@ -13,6 +13,9 @@
 %include "InfoSO1.asm"
 %include "ram.asm"
 %include "usocpu.asm"
+%include "DiscoDuro.asm"
+
+%define sizeof(x) x %+ _size
 
 section .bss
 				;Para el Macro printInt
@@ -23,6 +26,12 @@ section .bss
 			   seconds resb 8          ;almacena la cantidad de segundos que se va correr el programa
 			   resultadoo resb 1
 
+
+				 statfs: resb sizeof(STATFS)
+				 contenido_archivo: resb 10
+				 cosa1: resb 8
+				 cosa2: resb 16
+				 contenido_disp1: resb 10
 
 ;--------------------Segmento de datos--------------------
 ;Aqui se declaran las constantes de uso frecuente en el programa
@@ -58,13 +67,26 @@ section .data
 	tam_limpiar equ $ - limpiar
 
   ;Datos necesarios para los macros
-
   termios:        times 36 db 0									;Estructura de 36bytes que contiene el modo de operacion de la consola
   stdin:          equ 0												  ;Standard Input (se usa stdin en lugar de escribir manualmente los valores)
   ICANON:         equ 1<<1											;ICANON: Valor de control para encender/apagar el modo canonico
   ECHO:           equ 1<<3											;ECHO: Valor de control para encender/apagar el modo de eco
 
 
+	string_memoria_libre: db 'Memoria Libre del Disco Duro: ',0
+	tam_string_memoria_libre: equ $-string_memoria_libre
+	fileName: db '/',0
+	nombre_archivo: db '/sys/block/sda/size',0
+	tam_nombre_archivo: equ $-nombre_archivo
+
+	string_memoria_total: db 'Memoria Total del Disco Duro: ',0
+	tam_string_memoria_total: equ $-string_memoria_total
+	;break_line: db 0xa
+	string_GB: db 'GB'
+	tam_string_GB: equ $-string_GB
+	memoria_disp1: db '/sys/block/sda/stat',0
+	tam_memoria_disp: equ $-memoria_disp1
+	bufsize1 dw 1
 
 
 
@@ -81,7 +103,6 @@ section .data
 
 
   	;Impresión de las instrucciones
-
 		print instrucciones,tam_instrucciones
 
 		;Captura de opcion elegida
@@ -95,7 +116,7 @@ section .data
 		mov r13b,'4' ;;Guarda en r13 un  4
 		mov r14b,'5' ;;Guarda en r14 un  5
 		mov r15b,'6' ;;Guarda en r15 un  6
-	_break:
+
 
 		;Comparación de la tecla ingresada con cada opción
 		cmp r10b,r9b
@@ -117,7 +138,7 @@ section .data
 	.cpu:
 		print limpiar,tam_limpiar;Limpia la consola
 		print inst1,tam_inst1;Impresión de la inctrucción
-		call InformacionCPU ;Obtiene la información del CPU
+		call InformacionCPU ;Obtiene l información del CPU
 
 		jmp .reinicio
 
@@ -144,9 +165,11 @@ section .data
 
 	.hdd:
 		print limpiar,tam_limpiar;Limpia la consola
+		call hddd
 
 	.reinicio:
 	 print volver,tam_volver;Impresión del mensaje
+
 	.incorrecta:
 	 ;Captura de opcion elegida
 	 read tecla,1 ;Lee una tecla
@@ -169,6 +192,4 @@ section .data
   	mov rax,60						;se carga la llamada 60d (sys_exit) en rax
   	mov rdi,0							;en rdi se carga un 0
   	syscall								;se llama al sistema.
-
-
   ;fin del programa

@@ -1,4 +1,3 @@
-
 ;Macro-1: impr_texto.
 ;	Imprime un mensaje que se pasa como parametro
 ;	Recibe 2 parametros de entrada:
@@ -46,7 +45,7 @@ section .data
 
 	nada db ' '
 	tam_nada: equ $-nada
-	
+
 	bte db ' bytes'
 	tam_bte: equ $-bte
 
@@ -55,14 +54,9 @@ section .data
 	 cons_nueva_linea: db 0xa
 
 
-
-
-
 section .bss
 resultado: resb 56
   salida: resb 1
-
-
 
 
 section .text
@@ -77,9 +71,7 @@ syscall
 			;INICIA BUSCAR MEM RAM TOTAL
 
 
-
-
-mov r15,[resultado + 0x20]	
+mov r15,[resultado + 0x20]
 mov r14,[resultado + 0x28]
 impr_texto ram,tam_ram		; imprime encambezado
 
@@ -94,12 +86,7 @@ impr_texto bte,tam_bte
 impr_linea nada,1
 
 
-
-
-
 ;salida
 ret
-
-
 
        syscall

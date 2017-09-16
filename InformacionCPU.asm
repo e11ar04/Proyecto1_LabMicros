@@ -347,7 +347,5 @@ InformacionCPU:
 
 
 
-
 ;Fin del programa
-
   ret

@@ -1,5 +1,10 @@
+;Dalberth Corrales (dalbc)
+;Programa que imprime en consola el porcentaje de uso del cpu en el ultimo minuto, ultimos 5 minutos
+;y ultimos 15 minutos, imprime cada segundo los n segundos que el usuario desee. Ademas, se crea
+;un archivo de texto (usocpu.txt) y en este se guardan las n mediciones del % de uso en el ultimo minuto.
+;Los porcentajes los calcula a partir de la carga del cpu y la cantidad de nucleos
 ;--------------------------------------Macros del Programa---------------------------------------------
-%include "Macros.mac"
+;%include "Macros.mac"
 
 
 ;---------------------------------------------Data-------------------------------------------------------
@@ -20,19 +25,19 @@ section .data
 ;----------------------------------------Bytes Reservados-----------------------------------------------
 ;bytes utilizados para almacenar lo que se extrae del llamado sys_sysinfo, lo que se desea
 ;imprimir de lo extraido y tambien donde se almacena input del usuario
-section .bss
-        cpuload0 resb 4         ;se almacenan los primeros 4 bytes que da sys_sysinfo
-        numbufx resb 16         ;bytes utilizados para imprimir numeros enteros
-        numbufy resb 8
-        seconds resb 8          ;almacena la cantidad de segundos que se va correr el programa
-        residuo resb 8
+;section .bss
+        ;cpuload0 resb 4         ;se almacenan los primeros 4 bytes que da sys_sysinfo
+        ;numbufx resb 16         ;bytes utilizados para imprimir numeros enteros
+        ;numbufy resb 8
+        ;seconds resb 8          ;almacena la cantidad de segundos que se va correr el programa
+        ;residuo resb 8
 
 
 ;--------------------------------------Inicio de programa---------------------------------------------
 ;programa principal:
-section .text
-        global _start
-
+;section .text
+;        global _start
+UsoCPU:
 ;REGISTROS GLOBALES
 ;r15 - cantidad de nucleos del CPU
 ;r14 - contador para definir el ciclo uso_cpu
@@ -41,7 +46,7 @@ section .text
 
 ;rbx - se utiliza para multiplicar y dividir
 ;rax - cambia continuamente
-_start:
+;_start:
         mov rax, infocpu0       ;se imprimen titulos
         printstring
         mov rax, ncores
@@ -99,7 +104,7 @@ _siga1:
         printInt rax, numbufx   ;se imprime el % de uso del cpu (parte entera)
 
         mov rax, r12
-        filenum usocpu
+        filenum usocpu          ;se escribe en un archivo .txt el porcentaje de uso obtenido
         writefile r13, usocpu, 4
 
         mov rax, porcentaje     ;se imprime signo de porcentaje
@@ -155,7 +160,6 @@ _siga3:
         mov rax, porcentaje
         printstring
 
-
 ;--------------------------------------Ciclo Delay 1seg------------------------------------------------
         mov r10, 1         ;loop que genera un delay de aprox 1 segundo con una suma y una comparacion
 _loopseg:
@@ -168,8 +172,8 @@ _loopseg:
 
 
 ;--------------------------------------Fin de Programa------------------------------------------------
-_exit:
         closefile r13           ;cierra el archivo de texto
+        ;ret
         exit                    ;macro que termina el programa
 
 

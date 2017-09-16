@@ -1,4 +1,5 @@
 ;--------------------Segmento de Macros--------------------
+;Contiene una gran variedad de macros utilizados en los diferentes sub-programas
 
 
 ;-------------------------  MACRO #1  ----------------------------------
@@ -255,7 +256,8 @@
 
 ;-------------------------  MACRO #10 ----------------------------------
 ;no recibe parametros
-;es para terminar un programa x86_64
+;es para terminar un programa x86_64.
+;dalbc.
 %macro exit 0
         mov rax, 60
         mov rdi, 0
@@ -269,6 +271,7 @@
 ;no recibe parametros
 ;imprime el string que esta en rax antes de su llamado
 ;no importa el tamano del string mientras el ultimo caracter sea '0'
+;dalbc
 %macro printstring 0
 %%_printstring:
         push rax
@@ -295,6 +298,7 @@
 ;recibe 2 parametros, el primero de 16 reserved bytes y el segundo de 8 reserved bytes
 ;imprime un numero entero de cualquier tamano
 ;Modificado a partir de: https://pastebin.com/PN2jKVae
+;dalbc
 %macro printnum 2
 %%_printnum:
         mov rcx, %1
@@ -341,6 +345,7 @@
 
 ;-------------------------  MACRO #13 ----------------------------------
 ;al llamar este macro se guarda en eax la cantidad de nucleos del procesador
+;dalbc
 %macro cantnuc 0
         mov eax, 0xb
         mov ecx, 1
@@ -358,6 +363,7 @@
 ;es decir, toma un numero de consola (que en realidad es un string) y lo convierte en un numero entero
 ;convierte el string que esta almacenado en rax inmediatamente antes de su llamada.
 ;Modificado a partir de: http://asmtutor.com/#lesson16
+;dalbc
 %macro atoi 0
         push    rbx             ; preserve ebx on the stack to be restored after function runs
         push    rcx             ; preserve ecx on the stack to be restored after function runs
@@ -403,6 +409,7 @@
 ;1-registro de 64 bits que apunta al nombre del archivo (string que termina en 0)
 ;2-banderas: ya sea crear, crear y escribir, etc. (es un entero en decimal)
 ;3-permisos: entero en octal de 4 digitos (debe terminar en 'o' para indicar que es octal)
+;dalbc
 %macro openfile 3
         mov rax, 2
         mov rdi, %1
@@ -419,6 +426,7 @@
 ;1-registro que contiene el 'file descriptor', el macro 15 lo deja en rax
 ;2-texto que se va escribir en el archivo
 ;3-tamano del texto a escribir en el archivo
+;dalbc
 %macro writefile 3
         mov rdi, %1
         mov rax, 1
@@ -433,6 +441,7 @@
 ;-------------------------  MACRO #17 ----------------------------------
 ;macro para cerrar un archivo, recibe un parametro que es el registro que
 ;contiene el 'file descriptor', el macro 16 lo deja en rdi
+;dalbc
 %macro closefile 1
         mov rax, 3
         pop %1
@@ -446,7 +455,9 @@
 ;convierte un numero entero entre 0 y 100 a string/ascii, de modo que se
 ;puede mandar a escribir a un archivo de texto. el numero debe estar almacenado
 ;en rax antes de llamar al macro y el string se guarda en el unico parametro
-;que recibe el macro, un string (db) de almenos 4 bytes.
+;que recibe el macro, un string (db) de almenos 5 bytes. escribe un signo de
+;porcentaje al final.
+;dalbc
 %macro filenum 1
         cmp rax, 100
         je %%_cien
@@ -459,7 +470,7 @@
         mov [%1+1], rbx
         mov rbx, 48
         mov [%1+2], rbx
-        mov rbx, 10
+        mov rbx, "%"
         mov [%1+3], rbx
         jmp %%_end
 
@@ -473,6 +484,7 @@
 
         cmp rax, 0
         je %%_cerodec
+
         add rax, 48
         mov rbx, rax
         mov [%1+1], rbx
@@ -481,10 +493,8 @@
         add rdx, 48
         mov rbx, rdx
         mov [%1+2], rbx
-
-        mov rbx, 10
+        mov rbx, "%"
         mov [%1+3], rbx
-
         jmp %%_end
 
 %%_cerodec:
@@ -496,6 +506,7 @@
 %%_end:
 %endmacro
 ;---------------------------FIN DE MACRO--------------------------------------
+
 
 
 
