@@ -1,6 +1,6 @@
 # Proyecto1_LabMicros
 //
-PC.asm es el código principal, el que se debe compilar y linkear y para correr el programa.
+PC.asm es el código principal que une todos los demás, es el que se debe compilar y linkear y para correr el programa.
 //
 
 El programa debe retornar la siguiente información del procesador: 
