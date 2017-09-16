@@ -3,14 +3,21 @@
 PC.asm es el código principal que une todos los demás, es el que se debe compilar y linkear y para correr el programa.
 //
 
+//
+Macros.mac contiene la mayoría de macros empleados en los subprogramas, allí se describen detalladamente y la idea de este archivo es disminuir las líneas en otros archivos y hacer el código más legible.
+//
+
+-----Requisitos-----
+
 El programa debe retornar la siguiente información del procesador: 
 -Modelo, familia y fabricante -Frecuencia de operación -Numero de núcleos (cores) 
  -Cantidad de memoria cache
 El programa debe tener una interface básica en modo texto que se ejecuta desde la consola del sistema operativo
 El programa debe retornar la siguiente información de la memoria RAM: -Cantidad de memoria disponible -Frecuencia de operación de la memoria
 El problema debe reportar el tamaño y la cantidad de espacio disponible en el disco primario (disco duro) del sistema
+El programa debe mostrar el porcentaje de uso del CPU por n segundos según lo desee el usuario, una vez por segundo y en un archivo de texto se debe almacenar estos valores junto con la fecha y hora de medición.
 
-Links útiles
+-----Links útiles-----
 
 x86 Assembly Guide
 http://www.cs.virginia.edu/~evans/cs216/guides/x86.html
